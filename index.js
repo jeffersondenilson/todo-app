@@ -1,7 +1,6 @@
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
 const PORT = process.env.port || 3000;
 
 //mongoose connection
@@ -17,19 +16,58 @@ db.once('open', ()=>console.log('mongoose connected'));
 const taskSchema = new mongoose.Schema({
   title: {type: String, required: true},
   details: String,
-  done: {type: Boolean, default: false}
+  done: {type: Boolean, default: false},
+  modified: {type: Date, default: Date.now}//call Date.now() when no value is passed
 });
 const Task = mongoose.model('Task', taskSchema);
 
-//body-parser
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(express.json());
+app.use(express.urlencoded({extended: true}));
 
 //endpoints
 app.get('/api/getAllTasks', (req, res) => {
   Task.find(function(err, tasks){
-    if(err) res.status(500).send(err);
-    res.json(tasks);
+    if(err) res.status(500).send(err.message);
+    res.send(tasks);
+  });
+});
+
+app.get('/api/getTask/:id', (req, res)=>{
+  Task.findOne({_id: req.params.id}, function(err, task){
+    if(err) res.status(500).send(err.message);
+    res.send(task);
+  });
+});
+
+app.post('/api/createTask', (req, res)=>{
+  const task = new Task({
+    title: req.body.title, 
+    details: req.body.details
+  });
+
+  task.save(function(err, task){
+    if(err) res.status(500).send(err.message);
+    res.send(task);
+  });
+});
+
+app.put('/api/updateTask', (req, res)=>{
+  const {_id, title, details, done} = req.body;
+ 
+  Task.findOneAndUpdate({_id},//find 
+    {title, details, done, modified: Date.now()},//set 
+    //return updated document, run schema validations
+    {new: true, runValidators: true}, 
+    function(err, task){
+      if(err) res.status(500).send(err.message);
+      res.send(task);
+    });
+});
+
+app.delete('/api/deleteTask', (req, res)=>{
+  Task.findOneAndDelete({_id: req.body._id}, function(err, task){
+    if(err) res.status(500).send(err.message);
+    res.send(task);
   });
 });
 
