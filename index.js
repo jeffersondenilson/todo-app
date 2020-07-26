@@ -51,10 +51,10 @@ app.post('/api/createTask', (req, res)=>{
   });
 });
 
-app.put('/api/updateTask', (req, res)=>{
-  const {_id, title, details, done} = req.body;
+app.put('/api/updateTask/:id', (req, res)=>{
+  const {title, details, done} = req.body;
  
-  Task.findOneAndUpdate({_id},//find 
+  Task.findOneAndUpdate({_id: req.params.id},//find 
     {title, details, done, modified: Date.now()},//set 
     //return updated document, run schema validations
     {new: true, runValidators: true}, 
@@ -64,13 +64,11 @@ app.put('/api/updateTask', (req, res)=>{
     });
 });
 
-app.delete('/api/deleteTask', (req, res)=>{
-  Task.findOneAndDelete({_id: req.body._id}, function(err, task){
+app.delete('/api/deleteTask/:id', (req, res)=>{
+  Task.findOneAndDelete({_id: req.params.id}, function(err, task){
     if(err) res.status(500).send(err.message);
     res.send(task);
   });
 });
 
-app.listen(PORT, ()=> {
-  console.log(`app listening on port ${PORT}`);
-});
+app.listen(PORT, ()=>console.log(`app listening on port ${PORT}`));
