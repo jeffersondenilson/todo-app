@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const PORT = process.env.port || 3000;
 
 //mongoose connection
-mongoose.connect('mongodb://localhost/tasks', {useNewUrlParser: true, useUnifiedTopology: true})
+mongoose.connect('mongodb://localhost/tasks', {useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false})
 	//handle error on first connection
 	.catch(err=>console.log(err));
 const db = mongoose.connection;
@@ -27,14 +27,15 @@ app.use(express.urlencoded({extended: true}));
 //endpoints
 app.get('/api/getAllTasks', (req, res) => {
   Task.find(function(err, tasks){
-    if(err) res.status(500).send(err.message);
+    if(err) handleError(err, res);//res.status(500).send(err.message);
     res.send(tasks);
   });
 });
 
 app.get('/api/getTask/:id', (req, res)=>{
   Task.findOne({_id: req.params.id}, function(err, task){
-    if(err) res.status(500).send(err.message);
+    if(err) handleError(err, res);
+    if(task === null) res.status(400).send(`Could not find task ${req.params.id}`);
     res.send(task);
   });
 });
@@ -46,29 +47,41 @@ app.post('/api/createTask', (req, res)=>{
   });
 
   task.save(function(err, task){
-    if(err) res.status(500).send(err.message);
+    if(err) handleError(err, res);
     res.send(task);
   });
 });
 
 app.put('/api/updateTask/:id', (req, res)=>{
   const {title, details, done} = req.body;
- 
+  
   Task.findOneAndUpdate({_id: req.params.id},//find 
     {title, details, done, modified: Date.now()},//set 
     //return updated document, run schema validations
     {new: true, runValidators: true}, 
     function(err, task){
-      if(err) res.status(500).send(err.message);
+      if(err) handleError(err, res);
+      if(task === null) res.status(400).send(`Could not find task ${req.params.id}`);
       res.send(task);
     });
 });
 
 app.delete('/api/deleteTask/:id', (req, res)=>{
   Task.findOneAndDelete({_id: req.params.id}, function(err, task){
-    if(err) res.status(500).send(err.message);
+    if(err) handleError(err, res);
+    if(task === null) res.status(400).send(`Could not find task ${req.params.id}`);
     res.send(task);
   });
 });
 
 app.listen(PORT, ()=>console.log(`app listening on port ${PORT}`));
+
+function handleError(err, res){
+  if(err._message === 'Task validation failed'){
+    res.status(400).send(err.message);
+  }else if(err._message === 'Validation failed'){
+    res.status(400).send(err.message);
+  }else{
+    res.status(500).send(err.message);
+  }
+}
