@@ -5,6 +5,8 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: darkblue; /* For browsers that do not support gradients */
+  background-image: linear-gradient(90deg, darkblue, cyan); /* Standard syntax (must be last) */
 }
 
 code {
