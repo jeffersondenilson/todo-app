@@ -16,7 +16,7 @@ db.once('open', ()=>console.log('mongoose connected'));
 const taskSchema = new mongoose.Schema({
   title: {type: String, required: true},
   details: String,
-  done: {type: Boolean, default: false},
+  complete: {type: Boolean, default: false},
   modified: {type: Date, default: Date.now}//call Date.now() when no value is passed
 });
 const Task = mongoose.model('Task', taskSchema);
@@ -27,11 +27,12 @@ app.use(express.urlencoded({extended: true}));
 //endpoints
 app.get('/api/getAllTasks', (req, res) => {
   Task.find(function(err, tasks){
-    if(err) handleError(err, res);//res.status(500).send(err.message);
+    if(err) handleError(err, res);
     res.send(tasks);
   });
 });
 
+//CHANGE TO SEARCH WITH QUERY
 app.get('/api/getTask/:id', (req, res)=>{
   Task.findOne({_id: req.params.id}, function(err, task){
     if(err) handleError(err, res);
@@ -53,10 +54,10 @@ app.post('/api/createTask', (req, res)=>{
 });
 
 app.put('/api/updateTask/:id', (req, res)=>{
-  const {title, details, done} = req.body;
+  const {title, details, complete} = req.body;
   
   Task.findOneAndUpdate({_id: req.params.id},//find 
-    {title, details, done, modified: Date.now()},//set 
+    {title, details, complete, modified: Date.now()},//set 
     //return updated document, run schema validations
     {new: true, runValidators: true}, 
     function(err, task){
