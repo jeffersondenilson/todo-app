@@ -12,21 +12,27 @@ import Task from './Task';
 
 let tasks = [
 	{
+		_id: 1,
 		title: 'Lorem ipsum dolor sit amet.',
 		details: 'Labore blanditiis, voluptatum praesentium quisquam porro',
-		done: false
+		complete: false
 	},
 	{
+		_id: 2,
 		title: 'Lorem ipsum dolor sit amet consectetur adipisicing elit.',
 		details: 'Debitis, iste? Iste labore mollitia facere veritatis aspernatur numquam sapiente corrupti, minus amet! Amet porro harum quos sed eveniet magnam et labore.',
-		done: true
+		complete: true
 	}
 ];
 
 const styles = theme => ({
   root: {
 		flexGrow: 1,
-		marginLeft: "10px"
+		margin: "10px 5px 0 5px",
+		[theme.breakpoints.up('sm')]: {
+			marginTop: "20px",
+			marginLeft: "20px"
+		}
   },
   button: {
     marginLeft: theme.spacing(3)
@@ -42,6 +48,10 @@ class App extends React.Component {
 	constructor(props){
 		super(props);
 		this.state = { tasks };
+	}
+
+	handleChange = (event) => {
+		console.log(event);
 	}
 
   render (){
@@ -66,7 +76,7 @@ class App extends React.Component {
 	        </Toolbar>
 	      </AppBar>
 	      <Toolbar />
-	      { tasks.map( task => <Task task={task} /> ) }
+	      { tasks.map( task => <Task key={task._id} task={task} handleChange={this.handleChange} /> ) }
     	</div>
     );
   }
