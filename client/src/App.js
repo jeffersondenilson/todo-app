@@ -22,7 +22,13 @@ let tasks = [
 		title: 'Lorem ipsum dolor sit amet consectetur adipisicing elit.',
 		details: 'Debitis, iste? Iste labore mollitia facere veritatis aspernatur numquam sapiente corrupti, minus amet! Amet porro harum quos sed eveniet magnam et labore.',
 		complete: true
-	}
+	},
+	{
+		_id: 3,
+		title: 'Do something',
+		details: '7:30pm at quisquam',
+		complete: false
+	},
 ];
 
 const styles = theme => ({
@@ -39,9 +45,15 @@ const styles = theme => ({
   },
   appBar: {
   	color: "black",
-		backgroundColor: "rgba(255, 255, 255, 0.7)",//220
+		backgroundColor: "rgba(255, 255, 255, 0.7)",
 		marginBottom: theme.spacing(3)
-  }
+  },
+  // tasksContainer: {
+  // 	display: "flex",
+  // 	[theme.breakpoints.down('md')]: {
+  // 		flexDirection: "column"
+  // 	}
+  // }
 });
 
 class App extends React.Component {
@@ -76,7 +88,8 @@ class App extends React.Component {
 	        </Toolbar>
 	      </AppBar>
 	      <Toolbar />
-	      { tasks.map( task => <Task key={task._id} task={task} handleChange={this.handleChange} /> ) }
+      	{ tasks.map( task => 
+      		<Task key={task._id} task={task} handleChange={this.handleChange} /> ) }
     	</div>
     );
   }

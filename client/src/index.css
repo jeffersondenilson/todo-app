@@ -11,8 +11,11 @@ body {
   height: 100%;
   background-repeat: no-repeat;
   background-attachment: fixed;
-  background-color: darkblue;
+  background-image: darkblue;
+  background-image: -moz-linear-gradient(135deg, darkblue, cyan 80%);
+  background-image: -webkit-linear-gradient(135deg, darkblue, cyan 80%);
   background-image: linear-gradient(135deg, darkblue, cyan 80%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#00008B",endColorstr="#00FFFF",GradientType=1);
 }
 
 code {

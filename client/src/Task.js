@@ -13,19 +13,27 @@ const styles = theme => ({
   task: {
   	display: "flex",
   	alignItems: "center",
+  	// flexDirection: "column",
 		width: "96%",
+		margin: "auto",
 		padding: "5px",
 		[theme.breakpoints.up('md')]: {
 			width: "800px"
+			// width: "250px",
+			// margin: "10px"
 		},
 		borderBottom: "1px solid gray",
 		borderRadius: 0
 	},
+	checkedBox: {
+		color: "blue"
+	},
 	title: {
 		fontWeight: "bold"
 	},
-	checkedBox: {
-		color: "blue"
+	completeTaskText: {
+		textDecoration: "line-through",
+		color: "gray"
 	},
 	actions: {
 		display: "flex",
@@ -40,7 +48,9 @@ const styles = theme => ({
 function Task(props){
 	const {task, handleChange} = props;
 	const {classes} = props;
-
+	const taskText = task.complete ? classes.completeTaskText : '';
+	
+	//ACTIONS AT END
 	return (
 		<Paper className={classes.task}>
 			<Checkbox
@@ -52,7 +62,7 @@ function Task(props){
 				name="completeCheckbox"
 			/>
 
-			<div>
+			<div className={taskText}>
 				<div className={classes.title}>{task.title}</div>
 				<small color="textSecondary">{task.details}</small>
 			</div>
@@ -61,12 +71,66 @@ function Task(props){
 				<IconButton aria-label="edit">
 					<EditIcon />
 				</IconButton>
-				<IconButton>
-					<DeleteIcon aria-label="delete" />
+				<IconButton aria-label="delete">
+					<DeleteIcon />
 				</IconButton>
 			</div>
 		</Paper>
 	);
+	
+	/*
+	//ACTIONS AT FIRST
+	return (
+		<Paper className={classes.task}>
+			<div className={classes.actions}>
+				<Checkbox
+					checked={task.complete}
+					onChange={handleChange}
+					inputProps={{ 'aria-label': 'mark complete checkbox' }}
+					icon={<RadioButtonUncheckedIcon />} 
+					checkedIcon={<CheckCircleIcon className={classes.checkedBox} />} 
+					name="completeCheckbox"
+				/>
+				<IconButton aria-label="edit">
+					<EditIcon />
+				</IconButton>
+				<IconButton>
+					<DeleteIcon aria-label="delete" />
+				</IconButton>
+			</div>
+			<div className={taskText}>
+				<div className={classes.title}>{task.title}</div>
+				<small color="textSecondary">{task.details}</small>
+			</div>
+			
+		</Paper>
+	);
+	*/
+	//ACTIONS AT TOP
+	/*return (
+		<Paper className={classes.task}>
+			<div className={classes.actions}>
+				<Checkbox
+					checked={task.complete}
+					onChange={handleChange}
+					inputProps={{ 'aria-label': 'mark complete checkbox' }}
+					icon={<RadioButtonUncheckedIcon />} 
+					checkedIcon={<CheckCircleIcon className={classes.checkedBox} />} 
+					name="completeCheckbox"
+				/>
+				<IconButton aria-label="edit">
+					<EditIcon />
+				</IconButton>
+				<IconButton>
+					<DeleteIcon aria-label="delete" />
+				</IconButton>
+			</div>
+			<div className={taskText}>
+				<div className={classes.title}>{task.title}</div>
+				<small color="textSecondary">{task.details}</small>
+			</div>
+		</Paper>
+	);*/
 }
 
 Task.propTypes = {
@@ -74,15 +138,3 @@ Task.propTypes = {
 };
 
 export default withStyles(styles)(Task);
-
-/*
-<Checkbox
-	checked={checked}
-	onChange={handleChange}
-	inputProps={{ 'aria-label': 'primary checkbox' }}
-/>
-<FormControlLabel
-  control={<Checkbox icon={<FavoriteBorder />} checkedIcon={<Favorite />} name="checkedH" />}
-  label="Custom icon"
-/>
-*/
