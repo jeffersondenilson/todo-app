@@ -1,6 +1,6 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+// import PropTypes from 'prop-types';
+import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
@@ -9,6 +9,42 @@ import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 
+const useStyles = makeStyles((theme) => ({
+	task: {
+		display: "flex",
+		alignItems: "center",
+		// flexDirection: "column",
+		width: "96%",
+		// margin: "auto",
+		padding: "5px",
+		[theme.breakpoints.up('md')]: {
+			width: "800px"
+			// width: "250px",
+			// margin: "10px"
+		},
+		borderBottom: "1px solid gray",
+		borderRadius: 0
+	},
+	checkedBox: {
+		color: "blue"
+	},
+	title: {
+		fontWeight: "bold"
+	},
+	completeTaskText: {
+		textDecoration: "line-through",
+		color: "gray"
+	},
+	actions: {
+		display: "flex",
+		alignItems: "center",
+		marginLeft: "auto",
+		[theme.breakpoints.down('xs')]: {
+			flexDirection: "column"
+		}
+	}
+}));
+/*
 const styles = theme => ({
   task: {
   	display: "flex",
@@ -44,10 +80,11 @@ const styles = theme => ({
 		}
 	}
 });
-
+*/
 function Task(props){
 	const {task, handleChange} = props;
-	const {classes} = props;
+	//const {classes} = props;
+	const classes = useStyles();
 	const taskText = task.complete ? classes.completeTaskText : '';
 	
 	//ACTIONS AT END
@@ -133,8 +170,4 @@ function Task(props){
 	);*/
 }
 
-Task.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
-
-export default withStyles(styles)(Task);
+export default Task;//withStyles(styles)(Task);
