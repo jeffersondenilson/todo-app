@@ -7,6 +7,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Drawer from '@material-ui/core/Drawer';
 import Divider from '@material-ui/core/Divider';
+import Hidden from '@material-ui/core/Hidden';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -14,6 +15,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import MenuIcon from '@material-ui/icons/Menu';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import AddIcon from '@material-ui/icons/Add';
 import SortIcon from '@material-ui/icons/Sort';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
@@ -84,17 +86,17 @@ const styles = theme => ({
   appBar: {
   	color: "black",
 		backgroundColor: "rgba(255, 255, 255, 0.7)",
-		zIndex: theme.zIndex.drawer + 1,
-    // [theme.breakpoints.up('sm')]: {
-    //   width: `calc(100% - ${drawerWidth}px)`,
-    //   marginLeft: drawerWidth,
-    // },
+		// zIndex: theme.zIndex.drawer + 1,
+    [theme.breakpoints.up('sm')]: {
+      width: `calc(100% - ${drawerWidth}px)`,
+      marginLeft: drawerWidth,
+    },
   },
   menuButton: {
     marginRight: theme.spacing(2),
-    // [theme.breakpoints.up('sm')]: {
-    //   display: 'none',
-    // },
+    [theme.breakpoints.up('sm')]: {
+      display: 'none',
+    },
   },
   // necessary for content to be below app bar
   toolbar: {
@@ -103,15 +105,23 @@ const styles = theme => ({
   	fontSize: "1.5rem",
   	color: "#4d4d4d",
   	display: "flex",
-  	alignItems: "center",
-  	justifyContent: "center"
+  	alignItems: "center",//vertical
+  	justifyContent: "space-between"//horizontal
   },
   drawerPaper: {
     width: drawerWidth
   },
   content: {
     flexGrow: 1,
-    padding: theme.spacing(3),
+   	padding: theme.spacing(1),
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+  	justifyContent: "center",
+  	[theme.breakpoints.up('sm')]: {
+  		alignItems: "flex-start",
+  		padding: theme.spacing(3),
+  	}
   },
 });
 
@@ -129,9 +139,7 @@ class App extends React.Component {
 	}
 
 	handleDrawerToggle = () => {
-		this.setState((state)=>{
-			return {drawerOpen: !state.drawerOpen}
-		});
+		this.setState( state => ({drawerOpen: !state.drawerOpen}) );
 	}
 
   render (){
@@ -155,38 +163,50 @@ class App extends React.Component {
 	      </AppBar>
 	      
 				<nav className={classes.drawer}>
-					<Drawer
-	            variant="persistent"
+					{/*mobile drawer*/}
+					<Hidden smUp implementation="css">
+	          <Drawer
+	            // container={container}
+	            variant="temporary"
+	            // anchor={theme.direction === 'rtl' ? 'right' : 'left'}
 	            open={drawerOpen}
 	            onClose={this.handleDrawerToggle}
-	            ModalProps={{
-	              keepMounted: true, // Better open performance on mobile.
+	            classes={{
+	              paper: classes.drawerPaper,
 	            }}
-	            classes={{ paper: classes.drawerPaper }}
+	            ModalProps={{
+	              keepMounted: true,
+	            }}
 	          >
-	          	{/*<Typography className={classes.appTitle} variant="h6" noWrap>
-	            	To Do App
-	          	</Typography>*/}
-							<div className={classes.toolbar}>To Do App</div>
-	            <Divider />
-				      <List>
-				        <ListItem button>
-				            <ListItemIcon><AddIcon /></ListItemIcon>
-				            <ListItemText primary="Add" />
-				         </ListItem>
-				         <ListItem button>
-				            <ListItemIcon><SortIcon /></ListItemIcon>
-				            <ListItemText primary="Sort" />
-				         </ListItem>
-				         <ListItem button>
-				            <ListItemIcon>
-				            	{/*TODO: asc/desc*/}
-				            	<SortIcon />
-				            </ListItemIcon>
-				            <ListItemText primary="Sort" />
-				         </ListItem>
-				      </List>
+	          	<div className={classes.toolbar}>
+	          		<span style={{ marginLeft: 50 }}>To Do App</span>
+	          		<IconButton
+			            color="inherit"
+			            aria-label="close drawer"
+			            edge="start"
+			            onClick={this.handleDrawerToggle}
+			          >
+			            <ChevronLeftIcon />
+			          </IconButton>
+	          	</div>
+	          	<Divider />
+	            <DrawerList />
 	          </Drawer>
+	        </Hidden>
+	      	{/*desktop drawer*/}
+	        <Hidden xsDown implementation="css">
+	          <Drawer
+	            classes={{
+	              paper: classes.drawerPaper,
+	            }}
+	            variant="permanent"
+	            open
+	          >
+	          	<div className={classes.toolbar}>To Do App</div>
+	          	<Divider />
+	            <DrawerList />
+	          </Drawer>
+	        </Hidden>
 					</nav>
 
 					<main className={classes.content}>
@@ -204,3 +224,25 @@ App.propTypes = {
 };
 
 export default withStyles(styles)(App);
+
+function DrawerList(){
+	return (
+		<List>
+	    <ListItem button>
+	        <ListItemIcon><AddIcon /></ListItemIcon>
+	        <ListItemText primary="Add" />
+	     </ListItem>
+	     <ListItem button>
+	        <ListItemIcon><SortIcon /></ListItemIcon>
+	        <ListItemText primary="Sort" />
+	     </ListItem>
+	     <ListItem button>
+	        <ListItemIcon>
+	        	{/*TODO: asc/desc*/}
+	        	<SortIcon />
+	        </ListItemIcon>
+	        <ListItemText primary="Sort" />
+	     </ListItem>
+	  </List>
+	);
+}
