@@ -1,13 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 // import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import Typography from '@material-ui/core/Typography';
 import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
+import {
+  usePopupState,
+  bindTrigger,
+  bindMenu,
+} from 'material-ui-popup-state/hooks'
 
 const useStyles = makeStyles((theme) => ({
 	task: {
@@ -83,9 +93,10 @@ const styles = theme => ({
 */
 function Task(props){
 	const {task, handleChange} = props;
-	//const {classes} = props;
 	const classes = useStyles();
 	const taskText = task.complete ? classes.completeTaskText : '';
+
+	const [openOptions, setOpenOptions] = useState(false);
 	
 	//ACTIONS AT END
 	return (
@@ -105,13 +116,56 @@ function Task(props){
 			</div>
 
 			<div className={classes.actions}>
-				<IconButton aria-label="edit">
-					<EditIcon />
-				</IconButton>
-				<IconButton aria-label="delete">
-					<DeleteIcon />
+				<IconButton 
+					aria-label="task options" 
+					aria-controls="task-options-menu"
+        	aria-haspopup="true"
+        	// onClick={handleClick}
+        >
+					<MoreVertIcon />
 				</IconButton>
 			</div>
+
+			<Menu
+				id="task-options-menu"
+        anchorEl={anchorEl}
+        keepMounted
+        open={open}
+        onClose={handleClose}
+			>
+				<MenuItem>
+					<ListItemIcon>
+            <EditIcon />
+          </ListItemIcon>
+          <Typography variant="inherit" noWrap>
+            Edit
+          </Typography>
+				</MenuItem>
+				<MenuItem>
+					<ListItemIcon>
+            <DeleteIcon />
+          </ListItemIcon>
+          <Typography variant="inherit" noWrap>
+            Delete
+          </Typography>
+				</MenuItem>
+			</Menu>
+			{/*
+				const MenuPopupState = () => {
+				  const popupState = usePopupState({ variant: 'popover', popupId: 'demoMenu' })
+				  return (
+				    <div>
+				      <Button variant="contained" {...bindTrigger(popupState)}>
+				        Open Menu
+				      </Button>
+				      <Menu {...bindMenu(popupState)}>
+				        <MenuItem onClick={popupState.close}>Cake</MenuItem>
+				        <MenuItem onClick={popupState.close}>Death</MenuItem>
+				      </Menu>
+				    </div>
+				  )
+				}
+			*/}
 		</Paper>
 	);
 	
