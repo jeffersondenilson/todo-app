@@ -12,6 +12,8 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import MenuIcon from '@material-ui/icons/Menu';
@@ -20,6 +22,7 @@ import AddIcon from '@material-ui/icons/Add';
 import SortIcon from '@material-ui/icons/Sort';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
 import Task from './Task';
 
 let tasks = [
@@ -43,7 +46,8 @@ let tasks = [
 	},
 ];
 
-const drawerWidth = 250
+const sortOptions = ['title', 'complete', 'modified'];
+const drawerWidth = 250;
 const styles = theme => ({
   /*
   root: {
@@ -106,7 +110,8 @@ const styles = theme => ({
   	color: "#4d4d4d",
   	display: "flex",
   	alignItems: "center",//vertical
-  	justifyContent: "space-between"//horizontal
+  	justifyContent: "space-between",//horizontal,
+  	marginLeft: 50
   },
   drawerPaper: {
     width: drawerWidth
@@ -130,7 +135,9 @@ class App extends React.Component {
 		super(props);
 		this.state = { 
 			tasks,
-			drawerOpen: false
+			drawerOpen: false,
+			sort: 1,
+			ascendingOrder: true
 		};
 	}
 
@@ -142,9 +149,13 @@ class App extends React.Component {
 		this.setState( state => ({drawerOpen: !state.drawerOpen}) );
 	}
 
+	toggleAscendingOrder = () => {
+		this.setState( state => ({ascendingOrder: !state.ascendingOrder}) );
+	}
+
   render (){
   	const { classes } = this.props;
-		const { tasks, drawerOpen } = this.state;
+		const { tasks, drawerOpen, sort, ascendingOrder } = this.state;
 
     return(
     	<div className={classes.root}>
@@ -179,7 +190,7 @@ class App extends React.Component {
 	            }}
 	          >
 	          	<div className={classes.toolbar}>
-	          		<span style={{ marginLeft: 50 }}>To Do App</span>
+	          		<span>To Do App</span>
 	          		<IconButton
 			            color="inherit"
 			            aria-label="close drawer"
@@ -190,7 +201,11 @@ class App extends React.Component {
 			          </IconButton>
 	          	</div>
 	          	<Divider />
-	            <DrawerList />
+	            <DrawerList 
+	            	sort={sort} 
+	            	ascendingOrder={ascendingOrder}
+	            	toggleAscendingOrder={this.toggleAscendingOrder}
+	            />
 	          </Drawer>
 	        </Hidden>
 	      	{/*desktop drawer*/}
@@ -204,7 +219,11 @@ class App extends React.Component {
 	          >
 	          	<div className={classes.toolbar}>To Do App</div>
 	          	<Divider />
-	            <DrawerList />
+	            <DrawerList 
+	            	sort={sort} 
+	            	ascendingOrder={ascendingOrder}
+	            	toggleAscendingOrder={this.toggleAscendingOrder}
+	            />
 	          </Drawer>
 	        </Hidden>
 					</nav>
@@ -225,24 +244,47 @@ App.propTypes = {
 
 export default withStyles(styles)(App);
 
-function DrawerList(){
+function DrawerList(props){
+	const {sort, ascendingOrder, toggleAscendingOrder} = props;
+
 	return (
 		<List>
-	    <ListItem button>
-	        <ListItemIcon><AddIcon /></ListItemIcon>
-	        <ListItemText primary="Add" />
-	     </ListItem>
-	     <ListItem button>
-	        <ListItemIcon><SortIcon /></ListItemIcon>
-	        <ListItemText primary="Sort" />
-	     </ListItem>
-	     <ListItem button>
-	        <ListItemIcon>
-	        	{/*TODO: asc/desc*/}
-	        	<SortIcon />
-	        </ListItemIcon>
-	        <ListItemText primary="Sort" />
-	     </ListItem>
-	  </List>
+			<ListItem button>
+				<ListItemIcon><AddIcon /></ListItemIcon>
+				<ListItemText primary="Add" />
+			</ListItem>
+
+			<ListItem button>
+				<ListItemIcon><SortIcon /></ListItemIcon>
+				<ListItemText primary="Sort" />
+			</ListItem>
+
+			{ ascendingOrder ? 
+			<ListItem button onClick={toggleAscendingOrder}>
+				<ListItemIcon> <ArrowDropUpIcon /> </ListItemIcon>
+				<ListItemText primary="Ascending" />
+			</ListItem>
+			:
+			<ListItem button onClick={toggleAscendingOrder}>
+				<ListItemIcon> <ArrowDropDownIcon /> </ListItemIcon>
+				<ListItemText primary="Descending" />
+			</ListItem> }
+		</List>
 	);
 }
+
+/*
+<PopupState variant="popover" popupId="demo-popup-menu">
+  {(popupState) => (
+    <React.Fragment>
+      <Button variant="contained" color="primary" {...bindTrigger(popupState)}>
+        Open Menu
+      </Button>
+      <Menu {...bindMenu(popupState)}>
+        <MenuItem onClick={popupState.close}>Cake</MenuItem>
+        <MenuItem onClick={popupState.close}>Death</MenuItem>
+      </Menu>
+    </React.Fragment>
+  )}
+</PopupState>
+*/
