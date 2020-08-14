@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
 		// margin: "auto",
 		padding: "5px",
 		[theme.breakpoints.up('md')]: {
-			width: "800px"
+			width: "600px"
 			// width: "250px",
 			// margin: "10px"
 		},
@@ -47,11 +47,11 @@ const useStyles = makeStyles((theme) => ({
 	},
 	actions: {
 		display: "flex",
-		alignItems: "center",
+		alignItems: "flex-end",
 		marginLeft: "auto",
-		[theme.breakpoints.down('xs')]: {
-			flexDirection: "column"
-		}
+		// [theme.breakpoints.down('xs')]: {
+		// 	flexDirection: "column"
+		// }
 	}
 }));
 /*
@@ -96,7 +96,7 @@ function Task(props){
 	const classes = useStyles();
 	const taskText = task.complete ? classes.completeTaskText : '';
 
-	const [openOptions, setOpenOptions] = useState(false);
+	const popupState = usePopupState({ variant: 'popover', popupId: 'task-options-menu' });
 	
 	//ACTIONS AT END
 	return (
@@ -121,6 +121,7 @@ function Task(props){
 					aria-controls="task-options-menu"
         	aria-haspopup="true"
         	// onClick={handleClick}
+        	{...bindTrigger(popupState)}
         >
 					<MoreVertIcon />
 				</IconButton>
@@ -128,12 +129,13 @@ function Task(props){
 
 			<Menu
 				id="task-options-menu"
-        anchorEl={anchorEl}
-        keepMounted
-        open={open}
-        onClose={handleClose}
+        // anchorEl={anchorEl}
+        // keepMounted
+        // open={open}
+        // onClose={handleClose}
+        {...bindMenu(popupState)}
 			>
-				<MenuItem>
+				<MenuItem onClick={popupState.close}>
 					<ListItemIcon>
             <EditIcon />
           </ListItemIcon>
@@ -141,7 +143,7 @@ function Task(props){
             Edit
           </Typography>
 				</MenuItem>
-				<MenuItem>
+				<MenuItem onClick={popupState.close}>
 					<ListItemIcon>
             <DeleteIcon />
           </ListItemIcon>
