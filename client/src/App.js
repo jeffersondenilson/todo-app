@@ -2,7 +2,7 @@ import React from 'react';
 //import logo from './logo.svg';
 //import './App.css';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import { fade, withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
@@ -17,6 +17,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
+import InputBase from '@material-ui/core/InputBase';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import AddIcon from '@material-ui/icons/Add';
@@ -24,6 +25,7 @@ import SortIcon from '@material-ui/icons/Sort';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import SearchIcon from '@material-ui/icons/Search';
+import CloseIcon from '@material-ui/icons/Close';
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
 import Task from './Task';
 
@@ -49,25 +51,13 @@ let tasks = [
 ];
 
 const sortOptions = ['title', 'completed', 'modified'];
-// const drawerWidth = 250;
 const styles = theme => ({
   root: {
     display: 'flex',
   },
-  // drawer: {
-  //   [theme.breakpoints.up('sm')]: {
-  //     width: drawerWidth,
-  //     flexShrink: 0,
-  //   },
-  // },
   appBar: {
   	color: "black",
 		backgroundColor: "rgba(255, 255, 255, 0.6)"
-		// zIndex: theme.zIndex.drawer + 1,
-    // [theme.breakpoints.up('sm')]: {
-    //   width: `calc(100% - ${drawerWidth}px)`,
-    //   marginLeft: drawerWidth,
-    // },
   },
   appTitle: {
   	marginRight: 40,
@@ -76,9 +66,9 @@ const styles = theme => ({
   	}
   },
   button: {
-    // margin: theme.spacing(1)
-    // marginLeft: '2px',
-    // marginRight: '2px'
+    [theme.breakpoints.down('xs')]: {
+    	transform: 'scale(0.8)'
+    }
   },
   actions: {
   	[theme.breakpoints.down('xs')]: {
@@ -86,29 +76,59 @@ const styles = theme => ({
 	  	flexDirection: 'row',
 	  	alignItems: 'center',
 	  	justifyContent: 'space-between'
+    }
+  },
+  search: {
+    position: 'relative',
+    borderRadius: theme.shape.borderRadius,
+    backgroundColor: fade(theme.palette.common.white, 0.15),
+    '&:hover': {
+      backgroundColor: fade(theme.palette.common.white, 0.25),
     },
-  	
+    marginRight: theme.spacing(2),
+    // marginLeft: 0,
+    width: '100%',
+    [theme.breakpoints.up('sm')]: {
+      // marginLeft: theme.spacing(3),
+      width: 'auto',
+    },
   },
-  // menuButton: {
-  //   marginRight: theme.spacing(2),
-  //   [theme.breakpoints.up('sm')]: {
-  //     display: 'none',
-  //   },
-  // },
-  // necessary for content to be below app bar
-  toolbar: {
-  	...theme.mixins.toolbar,
-  	// fontWeight: "bold", 
-  	// fontSize: "1.5rem",
-  	// color: "#4d4d4d",
-  	// display: "flex",
-  	// alignItems: "center",//vertical
-  	// justifyContent: "space-between",//horizontal,
-  	// marginLeft: 50
+  searchIcon: {
+    padding: theme.spacing(0, 2),
+    height: '100%',
+    position: 'absolute',
+    pointerEvents: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  // drawerPaper: {
-  //   width: drawerWidth
-  // },
+  inputRoot: {
+    color: 'inherit'
+  },
+  inputInput: {
+    padding: theme.spacing(1, 2, 1, 0),
+    // vertical padding + font size from searchIcon
+    paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
+    transition: theme.transitions.create('width'),
+    width: '100%',
+    [theme.breakpoints.up('md')]: {
+      // width: '20ch',
+    },
+  },
+  cleanSearch: {
+  	height: '100%',
+    position: 'absolute',
+    top: 0,
+    right: -15,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    transform: 'scale(0.7)',
+    '&:hover': {
+      color: 'blue'
+    },
+  },
+  toolbar: {...theme.mixins.toolbar},
   content: {
     flexGrow: 1,
    	padding: theme.spacing(1),
@@ -121,6 +141,11 @@ const styles = theme => ({
   		padding: theme.spacing(3),
   	}
   },
+  mobileHide: {
+  	[theme.breakpoints.down('xs')]: {
+  		display: 'none'
+  	}
+  }
 });
 
 class App extends React.Component {
@@ -129,7 +154,9 @@ class App extends React.Component {
 		this.state = { 
 			tasks,
 			sort: 1,
-			ascendingOrder: true
+			order: 'ASC',
+			search: '',
+			mobileSearchBar: true
 		};
 	}
 
@@ -137,17 +164,29 @@ class App extends React.Component {
 		console.log(event);
 	}
 
-	handleDrawerToggle = () => {
-		this.setState( state => ({drawerOpen: !state.drawerOpen}) );
+	toggleOrder = () => {
+		this.setState( state => ({
+			order: state.order === 'ASC' ? 'DESC' : 'ASC'
+		}) );
 	}
 
-	toggleAscendingOrder = () => {
-		this.setState( state => ({ascendingOrder: !state.ascendingOrder}) );
+	toggleSearchBar = () => {
+		this.setState(state => ({ mobileSearchBar: !state.mobileSearchBar }) );
+	}
+
+	handleSearch = event => {
+		//TODO: search
+		this.setState({search: event.target.value});
+	}
+
+	cleanSearch = () => {
+		//TODO: reset search
+		this.setState({search: ''});
 	}
 
   render (){
   	const { classes } = this.props;
-		const { tasks, sort, ascendingOrder } = this.state;
+		const { tasks, sort, order, search, mobileSearchBar } = this.state;
 
     return(
     	<div className={classes.root}>
@@ -156,68 +195,72 @@ class App extends React.Component {
 	        	<Typography className={classes.appTitle} variant="h6" noWrap>
 	        		To Do App
 	        	</Typography>
-	        	{/*<span className={classes.buttons}>*/}
-		        <IconButton
-	            aria-label="add task"
-		          edge="start"
-			        color="inherit"
-			        className={classes.button}
-			      >
-	            <AddIcon />
-	          </IconButton>
+	        	{ mobileSearchBar ? 
+		        	<SearchBar 
+		        		search={search}
+		          	handleSearch={this.handleSearch} 
+		          	cleanSearch={this.cleanSearch}
+		          	classes={classes} 
+	          	/> 
+	          	: 
+			        <IconButton
+		            aria-label="add task"
+			          edge="start"
+				        color="inherit"
+				        className={classes.button}
+				      >
+		            <AddIcon />
+		          </IconButton>
+	        	}
+
+	        	{/*desktop*/}
+	        	<Hidden xsDown>
+		          <SearchBar 
+		          	search={search}
+		          	handleSearch={this.handleSearch} 
+		          	cleanSearch={this.cleanSearch}
+		          	classes={classes} 
+		          />
+	          </Hidden>
 
 	          {/*<Button
 	            // variant="outlined"
 			        color="inherit"
 			        className={classes.button}
-			        startIcon={<AddIcon />}
+			        startIcon={<SortIcon />}
 	          >
-	            Add
+	            {!mobileSearchBar && sortOptions[sort]}
 	          </Button>*/}
 
-	          <Button
+	          <IconButton
+	            color="inherit"
+	            edge="start"
+	            className={classes.button}
+	          >
+	            <SortIcon />
+	          </IconButton>
+
+          	<Button
 	            // variant="outlined"
 			        color="inherit"
 			        className={classes.button}
-			        startIcon={<SortIcon />}
+			        startIcon={order === 'ASC' ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />} 
+			        onClick={this.toggleOrder}
 	          >
-	            {sortOptions[sort]}
+	            {order}
 	          </Button>
-
-	          { 
-	          	ascendingOrder ? 
-	          	<Button
-		            // variant="outlined"
-				        color="inherit"
-				        className={classes.button}
-				        startIcon={<ArrowDropUpIcon />}
-		          >
-		            ASC
-		          </Button>
-		          :
-		          <Button
-		            variant="outlined"
-				        color="inherit"
-				        className={classes.button}
-				        startIcon={<ArrowDropDownIcon />}
-		          >
-		            DESC
-		          </Button>
-	        	}
 	        	
 	        	<Hidden smUp>
 		          <IconButton
 		            color="inherit"
 		            aria-label="search task"
 		            edge="start"
-		            // onClick={this.handleDrawerToggle}
 		            className={classes.button}
-		            // style={{ marginLeft: 'auto' }}
+		            onClick={this.toggleSearchBar}
 		          >
 		            <SearchIcon />
 		          </IconButton>
 	          </Hidden>
-	          {/*</span>*/}
 	        </Toolbar>
 	      </AppBar>
 
@@ -236,6 +279,37 @@ App.propTypes = {
 };
 
 export default withStyles(styles)(App);
+
+function SearchBar(props){
+	const { classes, search } = props
+
+	return (
+		<div className={classes.search}>
+	    <div className={classes.searchIcon}>
+	    	<SearchIcon />
+	    </div>
+	    <InputBase
+	      placeholder="Search…"
+	      classes={{
+	      	root: classes.inputRoot,
+	      	input: classes.inputInput,
+	      }}
+	      inputProps={{ 'aria-label': 'search' }}
+	      value={search}
+	      onChange={props.handleSearch}
+	    />
+	    { search && 
+	    <IconButton 
+	    	aria-label='clean search'
+	    	className={classes.cleanSearch} 
+	    	color="inherit" 
+	    	onClick={props.cleanSearch}>
+	    	<CloseIcon />
+	    </IconButton>
+	  	}
+	  </div>
+	);
+}
 
 function DrawerList(props){
 	const {sort, ascendingOrder, toggleAscendingOrder} = props;
@@ -280,4 +354,11 @@ function DrawerList(props){
     </React.Fragment>
   )}
 </PopupState>
+*/
+
+/*
+value         |0px     600px    960px    1280px   1920px
+key           |xs      sm       md       lg       xl
+screen width  |--------|--------|--------|--------|-------->
+range         |   xs   |   sm   |   md   |   lg   |   xl
 */

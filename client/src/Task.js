@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
 		width: "96%",
 		// margin: "auto",
 		padding: "5px",
-		[theme.breakpoints.up('md')]: {
+		[theme.breakpoints.up('sm')]: {
 			width: "600px"
 			// width: "250px",
 			// margin: "10px"
