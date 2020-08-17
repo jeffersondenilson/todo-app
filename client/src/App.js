@@ -26,6 +26,7 @@ import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import SearchIcon from '@material-ui/icons/Search';
 import CloseIcon from '@material-ui/icons/Close';
+import BackspaceIcon from '@material-ui/icons/Backspace';
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
 import Task from './Task';
 
@@ -67,17 +68,35 @@ const styles = theme => ({
   },
   button: {
     [theme.breakpoints.down('xs')]: {
-    	transform: 'scale(0.8)'
+    	// transform: 'scale(0.8)',
+    	// marginLeft: '1px',
+    	// marginRight: '1px'
     }
   },
   actions: {
   	[theme.breakpoints.down('xs')]: {
-      display: 'flex',
-	  	flexDirection: 'row',
-	  	alignItems: 'center',
-	  	justifyContent: 'space-between'
+      // display: 'flex',
+	  	// flexDirection: 'row',
+	  	// alignItems: 'center',
+	  	// justifyContent: 'space-around',
+	  	display: 'inline-grid',
+	  	gridTemplateColumns: 'auto auto auto auto',
+	  	paddingLeft: 10,
+	  	paddingRight: 10
     }
   },
+  onSearchBarOpen: {
+  	gridTemplateColumns: 'auto auto'
+  },
+  // searchActions: {
+  // 	flexDirection: 'column',
+  // 	justifyContent: 'center'
+  // },
+  // searchBarRow: {
+  // 	display: 'flex',
+  // 	alignItems: 'center',
+	 //  justifyContent: 'center'
+  // },
   search: {
     position: 'relative',
     borderRadius: theme.shape.borderRadius,
@@ -106,7 +125,7 @@ const styles = theme => ({
     color: 'inherit'
   },
   inputInput: {
-    padding: theme.spacing(1, 2, 1, 0),
+    padding: theme.spacing(1, 4, 1, 0),
     // vertical padding + font size from searchIcon
     paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
     transition: theme.transitions.create('width'),
@@ -119,7 +138,7 @@ const styles = theme => ({
   	height: '100%',
     position: 'absolute',
     top: 0,
-    right: -15,
+    right: -10,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'flex-end',
@@ -139,12 +158,7 @@ const styles = theme => ({
   	[theme.breakpoints.up('sm')]: {
   		alignItems: "flex-start",
   		padding: theme.spacing(3),
-  	}
-  },
-  mobileHide: {
-  	[theme.breakpoints.down('xs')]: {
-  		display: 'none'
-  	}
+  	},
   }
 });
 
@@ -155,7 +169,7 @@ class App extends React.Component {
 			tasks,
 			sort: 1,
 			order: 'ASC',
-			search: '',
+			search: 'Lorem ipsum dolor sit amet',
 			mobileSearchBar: true
 		};
 	}
@@ -171,7 +185,7 @@ class App extends React.Component {
 	}
 
 	toggleSearchBar = () => {
-		this.setState(state => ({ mobileSearchBar: !state.mobileSearchBar }) );
+		this.setState( state => ({ mobileSearchBar: !state.mobileSearchBar, search: '' }) );
 	}
 
 	handleSearch = event => {
@@ -187,11 +201,12 @@ class App extends React.Component {
   render (){
   	const { classes } = this.props;
 		const { tasks, sort, order, search, mobileSearchBar } = this.state;
-
+		// ${mobileSearchBar ? classes.searchActions : ''}
     return(
     	<div className={classes.root}>
 	      <AppBar className={classes.appBar} position="fixed">
-	        <Toolbar className={classes.actions}>
+	        <Toolbar className={`${classes.actions} 
+	        	${mobileSearchBar ? classes.onSearchBarOpen : ''}`}>
 	        	<Typography className={classes.appTitle} variant="h6" noWrap>
 	        		To Do App
 	        	</Typography>
@@ -200,7 +215,7 @@ class App extends React.Component {
 		        		search={search}
 		          	handleSearch={this.handleSearch} 
 		          	cleanSearch={this.cleanSearch}
-		          	classes={classes} 
+		          	classes={classes}
 	          	/> 
 	          	: 
 			        <IconButton
@@ -213,7 +228,7 @@ class App extends React.Component {
 		          </IconButton>
 	        	}
 
-	        	{/*desktop*/}
+	        	{/*desktop search bar*/}
 	        	<Hidden xsDown>
 		          <SearchBar 
 		          	search={search}
@@ -223,25 +238,45 @@ class App extends React.Component {
 		          />
 	          </Hidden>
 
-	          {/*<Button
-	            // variant="outlined"
+	          <Hidden smUp>
+		          { mobileSearchBar ? 
+			          <IconButton
+			            color="inherit"
+			            aria-label="toggle search task"
+			            className={classes.button}
+			            onClick={this.toggleSearchBar}
+			            style={{ marginLeft: 15 }}
+			          >
+			          	<CloseIcon />
+			          </IconButton>
+			          :
+			          <IconButton
+			            color="inherit"
+			            aria-label="toggle search task"
+			            className={classes.button}
+			            onClick={this.toggleSearchBar}
+			          >
+			          	<SearchIcon />
+			          </IconButton>
+		        	}
+	          </Hidden>
+	          <Button
 			        color="inherit"
 			        className={classes.button}
 			        startIcon={<SortIcon />}
 	          >
-	            {!mobileSearchBar && sortOptions[sort]}
-	          </Button>*/}
+	            {sortOptions[sort]}
+	          </Button>
 
-	          <IconButton
+	          {/*<IconButton
 	            color="inherit"
 	            edge="start"
 	            className={classes.button}
 	          >
 	            <SortIcon />
-	          </IconButton>
+	          </IconButton>*/}
 
           	<Button
-	            // variant="outlined"
 			        color="inherit"
 			        className={classes.button}
 			        startIcon={order === 'ASC' ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />} 
@@ -249,23 +284,13 @@ class App extends React.Component {
 	          >
 	            {order}
 	          </Button>
-	        	
-	        	<Hidden smUp>
-		          <IconButton
-		            color="inherit"
-		            aria-label="search task"
-		            edge="start"
-		            className={classes.button}
-		            onClick={this.toggleSearchBar}
-		          >
-		            <SearchIcon />
-		          </IconButton>
-	          </Hidden>
 	        </Toolbar>
 	      </AppBar>
 
 				<main className={classes.content}>
 					<div className={classes.toolbar} />
+					{ mobileSearchBar && 
+						<div className={classes.toolbar} style={{ marginTop: -25 }} /> }
       		{ tasks.map( task => 
       		<Task key={task._id} task={task} handleChange={this.handleChange} /> ) }
 				</main>
@@ -304,7 +329,7 @@ function SearchBar(props){
 	    	className={classes.cleanSearch} 
 	    	color="inherit" 
 	    	onClick={props.cleanSearch}>
-	    	<CloseIcon />
+	    	<BackspaceIcon />
 	    </IconButton>
 	  	}
 	  </div>
