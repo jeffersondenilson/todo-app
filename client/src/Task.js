@@ -17,88 +17,53 @@ import {
   usePopupState,
   bindTrigger,
   bindMenu,
-} from 'material-ui-popup-state/hooks'
+} from 'material-ui-popup-state/hooks';
+import TaskEdit from './TaskEdit';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles( (theme) => ({
 	task: {
-		display: "flex",
-		alignItems: "center",
-		// flexDirection: "column",
-		width: "96%",
-		// margin: "auto",
-		padding: "5px",
+		display: 'flex',
+		alignItems: 'center',
+		width: '96%',
+		padding: '5px',
 		[theme.breakpoints.up('sm')]: {
-			width: "600px"
-			// width: "250px",
-			// margin: "10px"
+			width: '600px'
 		},
-		borderBottom: "1px solid gray",
+		borderBottom: '1px solid gray',
 		borderRadius: 0
 	},
 	checkedBox: {
-		color: "blue"
+		color: 'blue'
 	},
 	title: {
-		fontWeight: "bold"
+		fontWeight: 'bold'
 	},
 	completeTaskText: {
-		textDecoration: "line-through",
-		color: "gray"
+		textDecoration: 'line-through',
+		color: 'gray'
 	},
 	actions: {
-		display: "flex",
-		alignItems: "flex-end",
-		marginLeft: "auto",
-		// [theme.breakpoints.down('xs')]: {
-		// 	flexDirection: "column"
-		// }
+		display: 'flex',
+		alignItems: 'flex-end',
+		marginLeft: 'auto'
 	}
-}));
-/*
-const styles = theme => ({
-  task: {
-  	display: "flex",
-  	alignItems: "center",
-  	// flexDirection: "column",
-		width: "96%",
-		margin: "auto",
-		padding: "5px",
-		[theme.breakpoints.up('md')]: {
-			width: "800px"
-			// width: "250px",
-			// margin: "10px"
-		},
-		borderBottom: "1px solid gray",
-		borderRadius: 0
-	},
-	checkedBox: {
-		color: "blue"
-	},
-	title: {
-		fontWeight: "bold"
-	},
-	completeTaskText: {
-		textDecoration: "line-through",
-		color: "gray"
-	},
-	actions: {
-		display: "flex",
-		alignItems: "center",
-		marginLeft: "auto",
-		[theme.breakpoints.down('xs')]: {
-			flexDirection: "column"
-		}
-	}
-});
-*/
+}) );
+
 function Task(props){
-	const {task, handleChange} = props;
 	const classes = useStyles();
-	const taskText = task.complete ? classes.completeTaskText : '';
+	const {task, handleChange} = props;
+	const [editMode, setEditMode] = useState(false);
+
+	const toggleEditMode = () => {
+		setEditMode(!editMode);
+	};
 
 	const popupState = usePopupState({ variant: 'popover', popupId: 'task-options-menu' });
 	
-	//ACTIONS AT END
+	if(editMode){
+		return <TaskEdit task={task} close={toggleEditMode} />
+	}
+
 	return (
 		<Paper className={classes.task}>
 			<Checkbox
@@ -110,7 +75,7 @@ function Task(props){
 				name="completeCheckbox"
 			/>
 
-			<div className={taskText}>
+			<div className={`${task.complete ? classes.completeTaskText : ''}`}>
 				<div className={classes.title}>{task.title}</div>
 				<small color="textSecondary">{task.details}</small>
 			</div>
@@ -120,22 +85,24 @@ function Task(props){
 					aria-label="task options" 
 					aria-controls="task-options-menu"
         	aria-haspopup="true"
-        	// onClick={handleClick}
         	{...bindTrigger(popupState)}
         >
 					<MoreVertIcon />
 				</IconButton>
 			</div>
 
-			<Menu
-				id="task-options-menu"
-        // anchorEl={anchorEl}
-        // keepMounted
-        // open={open}
-        // onClose={handleClose}
-        {...bindMenu(popupState)}
-			>
-				<MenuItem onClick={popupState.close}>
+			<Menu {...bindMenu(popupState)} 
+				id="task-options-menu" 
+				anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+      >
+				<MenuItem onClick={ ()=>{popupState.close(); toggleEditMode();} }>
 					<ListItemIcon>
             <EditIcon />
           </ListItemIcon>
@@ -152,78 +119,8 @@ function Task(props){
           </Typography>
 				</MenuItem>
 			</Menu>
-			{/*
-				const MenuPopupState = () => {
-				  const popupState = usePopupState({ variant: 'popover', popupId: 'demoMenu' })
-				  return (
-				    <div>
-				      <Button variant="contained" {...bindTrigger(popupState)}>
-				        Open Menu
-				      </Button>
-				      <Menu {...bindMenu(popupState)}>
-				        <MenuItem onClick={popupState.close}>Cake</MenuItem>
-				        <MenuItem onClick={popupState.close}>Death</MenuItem>
-				      </Menu>
-				    </div>
-				  )
-				}
-			*/}
 		</Paper>
 	);
-	
-	/*
-	//ACTIONS AT FIRST
-	return (
-		<Paper className={classes.task}>
-			<div className={classes.actions}>
-				<Checkbox
-					checked={task.complete}
-					onChange={handleChange}
-					inputProps={{ 'aria-label': 'mark complete checkbox' }}
-					icon={<RadioButtonUncheckedIcon />} 
-					checkedIcon={<CheckCircleIcon className={classes.checkedBox} />} 
-					name="completeCheckbox"
-				/>
-				<IconButton aria-label="edit">
-					<EditIcon />
-				</IconButton>
-				<IconButton>
-					<DeleteIcon aria-label="delete" />
-				</IconButton>
-			</div>
-			<div className={taskText}>
-				<div className={classes.title}>{task.title}</div>
-				<small color="textSecondary">{task.details}</small>
-			</div>
-			
-		</Paper>
-	);
-	*/
-	//ACTIONS AT TOP
-	/*return (
-		<Paper className={classes.task}>
-			<div className={classes.actions}>
-				<Checkbox
-					checked={task.complete}
-					onChange={handleChange}
-					inputProps={{ 'aria-label': 'mark complete checkbox' }}
-					icon={<RadioButtonUncheckedIcon />} 
-					checkedIcon={<CheckCircleIcon className={classes.checkedBox} />} 
-					name="completeCheckbox"
-				/>
-				<IconButton aria-label="edit">
-					<EditIcon />
-				</IconButton>
-				<IconButton>
-					<DeleteIcon aria-label="delete" />
-				</IconButton>
-			</div>
-			<div className={taskText}>
-				<div className={classes.title}>{task.title}</div>
-				<small color="textSecondary">{task.details}</small>
-			</div>
-		</Paper>
-	);*/
 }
 
-export default Task;//withStyles(styles)(Task);
+export default Task;

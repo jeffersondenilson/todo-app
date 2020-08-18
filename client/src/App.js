@@ -6,20 +6,13 @@ import { fade, withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import Drawer from '@material-ui/core/Drawer';
-import Divider from '@material-ui/core/Divider';
 import Hidden from '@material-ui/core/Hidden';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import InputBase from '@material-ui/core/InputBase';
-import MenuIcon from '@material-ui/icons/Menu';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import Divider from '@material-ui/core/Divider';
 import AddIcon from '@material-ui/icons/Add';
 import SortIcon from '@material-ui/icons/Sort';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
@@ -29,6 +22,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import BackspaceIcon from '@material-ui/icons/Backspace';
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
 import Task from './Task';
+import TaskEdit from './TaskEdit';
 
 let tasks = [
 	{
@@ -51,14 +45,13 @@ let tasks = [
 	},
 ];
 
-const sortOptions = ['title', 'completed', 'modified'];
 const styles = theme => ({
   root: {
     display: 'flex',
   },
   appBar: {
-  	color: "black",
-		backgroundColor: "rgba(255, 255, 255, 0.6)"
+  	color: 'black',
+		backgroundColor: 'rgba(255, 255, 255, 0.6)'
   },
   appTitle: {
   	marginRight: 40,
@@ -75,10 +68,6 @@ const styles = theme => ({
   },
   actions: {
   	[theme.breakpoints.down('xs')]: {
-      // display: 'flex',
-	  	// flexDirection: 'row',
-	  	// alignItems: 'center',
-	  	// justifyContent: 'space-around',
 	  	display: 'inline-grid',
 	  	gridTemplateColumns: 'auto auto auto auto',
 	  	paddingLeft: 10,
@@ -88,15 +77,6 @@ const styles = theme => ({
   onSearchBarOpen: {
   	gridTemplateColumns: 'auto auto'
   },
-  // searchActions: {
-  // 	flexDirection: 'column',
-  // 	justifyContent: 'center'
-  // },
-  // searchBarRow: {
-  // 	display: 'flex',
-  // 	alignItems: 'center',
-	 //  justifyContent: 'center'
-  // },
   search: {
     position: 'relative',
     borderRadius: theme.shape.borderRadius,
@@ -151,12 +131,12 @@ const styles = theme => ({
   content: {
     flexGrow: 1,
    	padding: theme.spacing(1),
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-  	justifyContent: "center",
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  	justifyContent: 'center',
   	[theme.breakpoints.up('sm')]: {
-  		alignItems: "flex-start",
+  		alignItems: 'flex-start',
   		padding: theme.spacing(3),
   	},
   }
@@ -167,10 +147,11 @@ class App extends React.Component {
 		super(props);
 		this.state = { 
 			tasks,
-			sort: 1,
+			sort: 'complete',
 			order: 'ASC',
-			search: 'Lorem ipsum dolor sit amet',
-			mobileSearchBar: true
+			search: '',
+			mobileSearchBar: false,
+			addTask: false
 		};
 	}
 
@@ -178,10 +159,8 @@ class App extends React.Component {
 		console.log(event);
 	}
 
-	toggleOrder = () => {
-		this.setState( state => ({
-			order: state.order === 'ASC' ? 'DESC' : 'ASC'
-		}) );
+	toggleAddTask = () => {
+		this.setState( state => ({ addTask: !state.addTask }) );
 	}
 
 	toggleSearchBar = () => {
@@ -198,10 +177,22 @@ class App extends React.Component {
 		this.setState({search: ''});
 	}
 
+	handleSort = (option) => {
+		//TODO: search
+		this.setState({sort: option});
+	}
+
+	toggleOrder = () => {
+		//TODO: search
+		this.setState( state => ({
+			order: state.order === 'ASC' ? 'DESC' : 'ASC'
+		}) );
+	}
+
   render (){
   	const { classes } = this.props;
-		const { tasks, sort, order, search, mobileSearchBar } = this.state;
-		// ${mobileSearchBar ? classes.searchActions : ''}
+		const { tasks, sort, order, search, mobileSearchBar, addTask } = this.state;
+		
     return(
     	<div className={classes.root}>
 	      <AppBar className={classes.appBar} position="fixed">
@@ -220,9 +211,9 @@ class App extends React.Component {
 	          	: 
 			        <IconButton
 		            aria-label="add task"
-			          edge="start"
 				        color="inherit"
-				        className={classes.button}
+				        className={classes.button} 
+				        onClick={this.toggleAddTask}
 				      >
 		            <AddIcon />
 		          </IconButton>
@@ -260,21 +251,16 @@ class App extends React.Component {
 			          </IconButton>
 		        	}
 	          </Hidden>
-	          <Button
-			        color="inherit"
-			        className={classes.button}
-			        startIcon={<SortIcon />}
-	          >
-	            {sortOptions[sort]}
-	          </Button>
 
-	          {/*<IconButton
-	            color="inherit"
-	            edge="start"
-	            className={classes.button}
-	          >
-	            <SortIcon />
-	          </IconButton>*/}
+	          <PopupState variant="popover" popupId="sort-menu">
+						  {(popupState) => 
+						  	<SortMenu 
+							  	popupState={popupState} 
+							  	sort={sort} 
+							  	handleSort={this.handleSort} 
+						  	/>
+						  }
+						</PopupState>
 
           	<Button
 			        color="inherit"
@@ -288,9 +274,21 @@ class App extends React.Component {
 	      </AppBar>
 
 				<main className={classes.content}>
+					{/*make content stay below app bar*/}
 					<div className={classes.toolbar} />
+
+					{/*add extra space when search bar is opened*/}
 					{ mobileSearchBar && 
-						<div className={classes.toolbar} style={{ marginTop: -25 }} /> }
+						<div className={classes.toolbar} style={{ marginTop: -25 }} /> 
+					}
+
+					{ addTask ? 
+						<React.Fragment>
+							<TaskEdit close={this.toggleAddTask} />
+							<Divider />
+						</React.Fragment>
+					}
+
       		{ tasks.map( task => 
       		<Task key={task._id} task={task} handleChange={this.handleChange} /> ) }
 				</main>
@@ -336,32 +334,32 @@ function SearchBar(props){
 	);
 }
 
-function DrawerList(props){
-	const {sort, ascendingOrder, toggleAscendingOrder} = props;
+function SortMenu(props){
+	const { popupState, sort, handleSort } = props;
 
 	return (
-		<List>
-			<ListItem button>
-				<ListItemIcon><AddIcon /></ListItemIcon>
-				<ListItemText primary="Add" />
-			</ListItem>
-
-			<ListItem button>
-				<ListItemIcon><SortIcon /></ListItemIcon>
-				<ListItemText primary="Sort" />
-			</ListItem>
-
-			{ ascendingOrder ? 
-			<ListItem button onClick={toggleAscendingOrder}>
-				<ListItemIcon> <ArrowDropUpIcon /> </ListItemIcon>
-				<ListItemText primary="Ascending" />
-			</ListItem>
-			:
-			<ListItem button onClick={toggleAscendingOrder}>
-				<ListItemIcon> <ArrowDropDownIcon /> </ListItemIcon>
-				<ListItemText primary="Descending" />
-			</ListItem> }
-		</List>
+		<React.Fragment>
+      <Button {...bindTrigger(popupState)} 
+      	aria-label="sort options" 
+				aria-controls="sort-options-menu" 
+      	aria-haspopup="true" 
+        color="inherit"
+        // className={classes.button}
+        startIcon={<SortIcon />}
+      >
+        {sort}
+      </Button>
+      <Menu id="sort-options-menu" {...bindMenu(popupState)}>
+      	{
+      		['title', 'complete', 'modified'].map( option => 
+      			<MenuItem key={option} selected={ option === sort }
+      			 onClick={ ()=>{popupState.close(); handleSort(option);} }>
+      				{option}
+      			</MenuItem>
+      		)
+      	}
+      </Menu>
+    </React.Fragment>
 	);
 }
 
