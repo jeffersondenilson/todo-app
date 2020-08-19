@@ -1,37 +1,89 @@
 import React, { useState } from 'react';
-import { makeStyles, useStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
 import IconButton from '@material-ui/core/IconButton';
+import Button from '@material-ui/core/Button';
 import SaveIcon from '@material-ui/icons/Save';
 import CloseIcon from '@material-ui/icons/Close';
 
 const useStyles = makeStyles( (theme) => ({
-	//
+	root: {
+		width: '96%',
+		padding: '5px',
+		marginTop: '10px',
+		marginBottom: '10px',
+		borderRadius: 0,
+		[theme.breakpoints.up('sm')]: {
+			width: '600px'
+		}
+	},
+	form: {
+		width: '100%',
+		display: 'flex',
+		flexDirection: 'column'
+	},
+	actions: {
+		marginLeft: 'auto',
+		[theme.breakpoints.up('sm')]: {
+			// display: 'flex',
+			// justifyContent: 'space-between',
+			marginRight: '12px'
+		}
+	},
+	endActions: {
+		// marginLeft: 'auto',
+		[theme.breakpoints.up('sm')]: {
+			// display: 'flex',
+			// justifyContent: 'flex-start',
+			margin: '10px 0px 10px 25px'
+		}
+	},
+	fields: {
+		display: 'flex',
+		justifyContent: 'space-around',
+		// marginBottom: '10px',
+		[theme.breakpoints.down('xs')]: {
+			flexDirection: 'column',
+			paddingLeft: '5px',
+			paddingRight: '5px'
+		}
+	},
+	field: {
+		marginBottom: 15
+	}
 }) );
 
 function TaskEdit(props){
 	const classes = useStyles();
-	const { task, close } = props;
-	const [title, setTitle] = useState(task.title || '');
-	const [details, setDetails] = useState(task.details || '');
+	const [task, setTask] = useState(props.task || {title: '', details: ''});
+	const [titleError, setTitleError] = useState(false);
 
 	const handleChange = (event) => {
-		event.target.id === 'title' ? 
-		setTitle(event.target.value) : 
-		setDetails(event.target.value);
+		const { id, value } = event.target;
+
+		setTask({ ...task, [id]: value });
+
+		if(id === 'title'){
+			setTitleError(!/([^\s])/.test(value));
+		}
   };
 
-  const submit = () => {
-  	//
+  const submit = (event) => {
+  	// event.preventDefault();
+  	if(!/([^\s])/.test(task.title)){
+  		setTitleError(true);
+  	}else{
+  		// TODO: close
+  		console.log('submit');
+  	}
   };
-
-  const close = () => props.close();
-	
+  //TODO: insert add/edit
 	return (
-		<Paper>
-			<form {/*noValidate*/} autoComplete="off">
-				<div>
+		<Paper className={classes.root}>
+			<form className={classes.form} id="form" 
+				onSubmit={submit} autoComplete="off">{/*noValidate*/}
+				<div className={classes.actions}>
 					<IconButton
             aria-label="save"
 		        onClick={submit}
@@ -40,17 +92,37 @@ function TaskEdit(props){
           </IconButton>
 		      <IconButton
             aria-label="close"
-		        onClick={close}
+		        onClick={props.close}
 		      >
             <CloseIcon />
           </IconButton>
 				</div>
 
-	      <TextField id="title" label="task title" variant="outlined" required
-	      	color="blue" value={title} onChange={handleChange} />
+				<div className={classes.fields}>
+		      <TextField id="title" label="Title" variant="outlined" required 
+		      	error={titleError} 
+		      	helperText={titleError ? 'At least one character' : ''}
+		      	color="primary" className={classes.field} 
+		      	value={task.title} onChange={handleChange} />
+	      	{/*TODO: change to text area*/}
+		      <TextField id="details" label="Details" variant="outlined"
+		      	color="primary" className={classes.field} 
+		      	value={task.details} onChange={handleChange} />
+	      </div>
 
-	      <TextField id="details" label="task details" variant="outlined"
-	      	color="blue" value={details} onChange={handleChange} />
+{/*	      <div className={classes.endActions}>
+	      	<Button color="inherit" variant="outlined" 
+	      		startIcon={<CloseIcon />}
+	      	>
+	      		Cancel
+	      	</Button>
+
+	      	<Button type="submit" form="form" variant="outlined" color="primary"
+	      		startIcon={<SaveIcon color="inherit" />}
+	      	>
+	      		Save
+	      	</Button>
+	      </div>*/}
     	</form>
 		</Paper>
 	);

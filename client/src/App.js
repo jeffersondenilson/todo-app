@@ -151,7 +151,7 @@ class App extends React.Component {
 			order: 'ASC',
 			search: '',
 			mobileSearchBar: false,
-			addTask: false
+			addTask: true
 		};
 	}
 
@@ -282,7 +282,7 @@ class App extends React.Component {
 						<div className={classes.toolbar} style={{ marginTop: -25 }} /> 
 					}
 
-					{ addTask ? 
+					{ addTask && 
 						<React.Fragment>
 							<TaskEdit close={this.toggleAddTask} />
 							<Divider />
@@ -362,22 +362,6 @@ function SortMenu(props){
     </React.Fragment>
 	);
 }
-
-/*
-<PopupState variant="popover" popupId="demo-popup-menu">
-  {(popupState) => (
-    <React.Fragment>
-      <Button variant="contained" color="primary" {...bindTrigger(popupState)}>
-        Open Menu
-      </Button>
-      <Menu {...bindMenu(popupState)}>
-        <MenuItem onClick={popupState.close}>Cake</MenuItem>
-        <MenuItem onClick={popupState.close}>Death</MenuItem>
-      </Menu>
-    </React.Fragment>
-  )}
-</PopupState>
-*/
 
 /*
 value         |0px     600px    960px    1280px   1920px

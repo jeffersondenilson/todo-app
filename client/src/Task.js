@@ -48,17 +48,16 @@ const useStyles = makeStyles( (theme) => ({
 		marginLeft: 'auto'
 	}
 }) );
-
+// TODO: edit dialog
 function Task(props){
 	const classes = useStyles();
 	const {task, handleChange} = props;
 	const [editMode, setEditMode] = useState(false);
+	const popupState = usePopupState({ variant: 'popover', popupId: 'task-options-menu' });
 
 	const toggleEditMode = () => {
 		setEditMode(!editMode);
 	};
-
-	const popupState = usePopupState({ variant: 'popover', popupId: 'task-options-menu' });
 	
 	if(editMode){
 		return <TaskEdit task={task} close={toggleEditMode} />
