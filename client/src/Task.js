@@ -48,7 +48,7 @@ const useStyles = makeStyles( (theme) => ({
 		marginLeft: 'auto'
 	}
 }) );
-// TODO: edit dialog
+// TODO: delete dialog
 function Task(props){
 	const classes = useStyles();
 	const {task, handleChange} = props;
