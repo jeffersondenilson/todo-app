@@ -12,7 +12,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import InputBase from '@material-ui/core/InputBase';
-import Divider from '@material-ui/core/Divider';
 import AddIcon from '@material-ui/icons/Add';
 import SortIcon from '@material-ui/icons/Sort';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
@@ -139,6 +138,17 @@ const styles = theme => ({
   		alignItems: 'flex-start',
   		padding: theme.spacing(3),
   	},
+  },
+  divider: {
+  	width: '80%',
+  	height: '3px',
+  	margin: '0px 10% 10px 10%',
+  	backgroundColor: 'cyan',
+  	[theme.breakpoints.up('sm')]:{
+  		width: '500px',
+  		marginLeft: '50px',
+  		marginRight: '50px',
+  	}
   }
 });
 
@@ -146,12 +156,14 @@ class App extends React.Component {
 	constructor(props){
 		super(props);
 		this.state = { 
-			tasks,
+			tasks: [...tasks],
 			sort: 'complete',
 			order: 'ASC',
 			search: '',
+			//TODO:
+			//searchResults: [],
 			mobileSearchBar: false,
-			addTask: true
+			addTask: false
 		};
 	}
 
@@ -161,10 +173,13 @@ class App extends React.Component {
 
 	toggleAddTask = () => {
 		this.setState( state => ({ addTask: !state.addTask }) );
+		window.scrollTo(0, 0);
 	}
 
 	toggleSearchBar = () => {
-		this.setState( state => ({ mobileSearchBar: !state.mobileSearchBar, search: '' }) );
+		this.setState( state => ({ 
+			mobileSearchBar: !state.mobileSearchBar, search: '', addTask: false 
+		}) );
 	}
 
 	handleSearch = event => {
@@ -285,7 +300,7 @@ class App extends React.Component {
 					{ addTask && 
 						<React.Fragment>
 							<TaskEdit close={this.toggleAddTask} />
-							<Divider />
+							<div className={classes.divider} />
 						</React.Fragment>
 					}
 
