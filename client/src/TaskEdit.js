@@ -10,6 +10,7 @@ const useStyles = makeStyles( (theme) => ({
 	root: {
 		width: '96%',
 		padding: '5px',
+		marginTop: '10px',
 		marginBottom: '10px',
 		[theme.breakpoints.up('sm')]: {
 			width: '600px'
@@ -45,17 +46,17 @@ function TaskEdit(props){
 
 		setTask({ ...task, [id]: value });
 
-		if(id === 'title'){
+		if(id === 'title'){//test for empty string
 			setTitleError(!/([^\s])/.test(value));
 		}
   };
 
-  const submit = (event) => {
-  	if(!/([^\s])/.test(task.title)){
+  const submit = () => {
+  	if(!/([^\s])/.test(task.title)){//test for empty string 
   		setTitleError(true);
   	}else{
-  		console.log('submit');
-  		props.close();
+  		task._id ? props.updateTask(task) : props.createTask(task);
+  		// props.close();
   	}
   };
   

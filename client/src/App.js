@@ -160,15 +160,25 @@ class App extends React.Component {
 			sort: 'complete',
 			order: 'ASC',
 			search: '',
-			//TODO:
-			//searchResults: [],
 			mobileSearchBar: false,
 			addTask: false
 		};
 	}
 
-	handleChange = (event) => {
-		console.log(event);
+	createTask = (task) => {
+		//
+	}
+
+	readTasks = () => {
+		//
+	}
+
+	updateTask = (task) => {
+		//
+	}
+
+	deleteTask = (task) => {
+		//
 	}
 
 	toggleAddTask = () => {
@@ -299,13 +309,15 @@ class App extends React.Component {
 
 					{ addTask && 
 						<React.Fragment>
-							<TaskEdit close={this.toggleAddTask} />
+							<TaskEdit createTask={this.createTask} close={this.toggleAddTask} />
 							<div className={classes.divider} />
 						</React.Fragment>
 					}
 
       		{ tasks.map( task => 
-      		<Task key={task._id} task={task} handleChange={this.handleChange} /> ) }
+      			<Task key={task._id} task={task} 
+      				updateTask={this.updateTask} deleteTask={this.deleteTask} /> 
+      		) }
 				</main>
 			</div>
     );
