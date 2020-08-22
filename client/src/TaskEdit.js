@@ -5,6 +5,7 @@ import TextField from '@material-ui/core/TextField';
 import IconButton from '@material-ui/core/IconButton';
 import SaveIcon from '@material-ui/icons/Save';
 import CloseIcon from '@material-ui/icons/Close';
+const axios = require('axios');
 
 const useStyles = makeStyles( (theme) => ({
 	root: {
@@ -38,6 +39,8 @@ const useStyles = makeStyles( (theme) => ({
 
 function TaskEdit(props){
 	const classes = useStyles();
+	const { close, reloadData } = props;
+	// console.log(reloadData);
 	const [task, setTask] = useState(props.task || {title: '', details: ''});
 	const [titleError, setTitleError] = useState(false);
 
@@ -51,12 +54,22 @@ function TaskEdit(props){
 		}
   };
 
-  const submit = () => {
+  const submit = async () => {
   	if(!/([^\s])/.test(task.title)){//test for empty string 
   		setTitleError(true);
   	}else{
-  		task._id ? props.updateTask(task) : props.createTask(task);
-  		// props.close();
+  		try{
+	  		if(task._id){
+	  			await axios.put(`/api/updateTask/${task._id}`, task);
+	  		}else{
+	  			await axios.post(`/api/createTask/`, task);
+	  		}
+	  		close();
+	  		reloadData();
+  		}catch(err){
+  			// TODO: feedback
+  			console.log(err);
+  		}
   	}
   };
   
@@ -72,7 +85,7 @@ function TaskEdit(props){
           </IconButton>
 		      <IconButton
             aria-label="close"
-		        onClick={props.close}
+		        onClick={close}
 		      >
             <CloseIcon />
           </IconButton>

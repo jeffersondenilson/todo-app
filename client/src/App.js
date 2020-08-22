@@ -22,27 +22,31 @@ import BackspaceIcon from '@material-ui/icons/Backspace';
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
 import Task from './Task';
 import TaskEdit from './TaskEdit';
+const axios = require('axios');
 
-let tasks = [
+/*let tasks = [
 	{
 		_id: 1,
 		title: 'Lorem ipsum dolor sit amet.',
 		details: 'Labore blanditiis, voluptatum praesentium quisquam porro',
-		complete: false
+		complete: false,
+		modified: Date.now()
 	},
 	{
 		_id: 2,
 		title: 'Lorem ipsum dolor sit amet consectetur adipisicing elit.',
 		details: 'Debitis, iste? Iste labore mollitia facere veritatis aspernatur numquam sapiente corrupti, minus amet! Amet porro harum quos sed eveniet magnam et labore.',
-		complete: true
+		complete: true,
+		modified: Date.now()
 	},
 	{
 		_id: 3,
 		title: 'Do something',
 		details: '7:30pm at quisquam',
-		complete: false
+		complete: false,
+		modified: Date.now()
 	},
-];
+];*/
 
 const styles = theme => ({
   root: {
@@ -156,7 +160,7 @@ class App extends React.Component {
 	constructor(props){
 		super(props);
 		this.state = { 
-			tasks: [...tasks],
+			tasks: [],
 			sort: 'complete',
 			order: 'ASC',
 			search: '',
@@ -165,23 +169,22 @@ class App extends React.Component {
 		};
 	}
 
-	createTask = (task) => {
-		//
+	componentDidMount(){
+		this.getAllTasks();
 	}
 
-	readTasks = () => {
-		//
-	}
-
-	updateTask = (task) => {
-		//
-	}
-
-	deleteTask = (task) => {
-		//
+	getAllTasks = async () => {
+		try{
+			const res = await axios.get('/api/getAllTasks');
+			this.setState({tasks: res.data});
+		}catch(err){
+			// TODO: feedback
+			console.log(err);
+		}
 	}
 
 	toggleAddTask = () => {
+		console.log('toggle add')
 		this.setState( state => ({ addTask: !state.addTask }) );
 		window.scrollTo(0, 0);
 	}
@@ -309,14 +312,13 @@ class App extends React.Component {
 
 					{ addTask && 
 						<React.Fragment>
-							<TaskEdit createTask={this.createTask} close={this.toggleAddTask} />
+							<TaskEdit reloadData={this.getAllTasks} close={this.toggleAddTask} />
 							<div className={classes.divider} />
 						</React.Fragment>
 					}
 
       		{ tasks.map( task => 
-      			<Task key={task._id} task={task} 
-      				updateTask={this.updateTask} deleteTask={this.deleteTask} /> 
+      			<Task key={task._id} task={task} reloadData={this.getAllTasks} /> 
       		) }
 				</main>
 			</div>

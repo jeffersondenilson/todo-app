@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
-const PORT = process.env.port || 3000;
+const PORT = process.env.port || 3001;
 
 //mongoose connection
 mongoose.connect('mongodb://localhost/tasks', {useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false})

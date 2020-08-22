@@ -23,6 +23,7 @@ import {
   bindMenu,
 } from 'material-ui-popup-state/hooks';
 import TaskEdit from './TaskEdit';
+const axios = require('axios');
 
 const useStyles = makeStyles( (theme) => ({
 	task: {
@@ -55,7 +56,7 @@ const useStyles = makeStyles( (theme) => ({
 
 function Task(props){
 	const classes = useStyles();
-	const { task } = props;
+	const { task, reloadData } = props;
 	const [editMode, setEditMode] = useState(false);
 	const [deleteDialog, setDeleteDialog] = useState(false);
 	const popupState = usePopupState({ variant: 'popover', popupId: 'task-options-menu' });
@@ -68,15 +69,30 @@ function Task(props){
 		setDeleteDialog(!deleteDialog);
 	}
 
-	const deleteTask = () => {
-		setDeleteDialog(false);
-		props.deleteTask(task);
+	const updateComplete = async () => {
+		try{
+			await axios.put(`/api/updateTask/${task._id}`, 
+				{...task, complete: !task.complete});
+			reloadData();
+		}catch(err){
+			/*TODO: feedback*/
+			console.log(err);
+		}
 	}
 
-	const updateComplete = () => props.updateTask({...task, complete: !task.complete});
+	const deleteTask = async () => {
+		setDeleteDialog(false);
+		try{
+			await axios.delete(`/api/deleteTask/${task._id}`);
+			reloadData();
+		}catch(err){
+			/*TODO: feedback*/
+			console.log(err);
+		}
+	}
 
 	if(editMode){
-		return <TaskEdit task={task} updateTask={props.updateTask} close={toggleEditMode} />
+		return <TaskEdit task={task} reloadData={reloadData} close={toggleEditMode} />
 	}
 
 	return (
