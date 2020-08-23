@@ -24,30 +24,6 @@ import Task from './Task';
 import TaskEdit from './TaskEdit';
 const axios = require('axios');
 
-/*let tasks = [
-	{
-		_id: 1,
-		title: 'Lorem ipsum dolor sit amet.',
-		details: 'Labore blanditiis, voluptatum praesentium quisquam porro',
-		complete: false,
-		modified: Date.now()
-	},
-	{
-		_id: 2,
-		title: 'Lorem ipsum dolor sit amet consectetur adipisicing elit.',
-		details: 'Debitis, iste? Iste labore mollitia facere veritatis aspernatur numquam sapiente corrupti, minus amet! Amet porro harum quos sed eveniet magnam et labore.',
-		complete: true,
-		modified: Date.now()
-	},
-	{
-		_id: 3,
-		title: 'Do something',
-		details: '7:30pm at quisquam',
-		complete: false,
-		modified: Date.now()
-	},
-];*/
-
 const styles = theme => ({
   root: {
     display: 'flex',
@@ -156,13 +132,15 @@ const styles = theme => ({
   }
 });
 
+let delaySearch;
+
 class App extends React.Component {
 	constructor(props){
 		super(props);
 		this.state = { 
 			tasks: [],
 			sort: 'complete',
-			order: 'ASC',
+			order: 1,
 			search: '',
 			mobileSearchBar: false,
 			addTask: false
@@ -170,21 +148,26 @@ class App extends React.Component {
 	}
 
 	componentDidMount(){
-		this.getAllTasks();
+		this.getTasks();
 	}
 
-	getAllTasks = async () => {
-		try{
-			const res = await axios.get('/api/getAllTasks');
-			this.setState({tasks: res.data});
-		}catch(err){
-			// TODO: feedback
-			console.log(err);
-		}
+	getTasks = () => {
+		this.setState( async (state) => {
+			try{
+				let { search, sort, order } = state;
+				const url = search ? 
+				`/api/searchTasks?search=${search}&sort=${sort}&order=${order}` : 
+				`/api/getAllTasks?sort=${sort}&order=${order}`
+				const res = await axios.get(url);
+				this.setState({tasks: res.data});
+			}catch(err){
+				/*TODO*/
+				console.log(err);
+			}
+		});
 	}
 
 	toggleAddTask = () => {
-		console.log('toggle add')
 		this.setState( state => ({ addTask: !state.addTask }) );
 		window.scrollTo(0, 0);
 	}
@@ -193,28 +176,32 @@ class App extends React.Component {
 		this.setState( state => ({ 
 			mobileSearchBar: !state.mobileSearchBar, search: '', addTask: false 
 		}) );
+		this.getTasks();
 	}
 
-	handleSearch = event => {
-		//TODO: search
+	handleSearch = (event) => {
 		this.setState({search: event.target.value});
+		// reset wait
+		clearTimeout(delaySearch);
+		// wait while user is typing
+		delaySearch = setTimeout(this.getTasks, 500);
 	}
 
 	cleanSearch = () => {
-		//TODO: reset search
 		this.setState({search: ''});
+		this.getTasks();
 	}
 
 	handleSort = (option) => {
-		//TODO: search
 		this.setState({sort: option});
+		this.getTasks();
 	}
 
 	toggleOrder = () => {
-		//TODO: search
 		this.setState( state => ({
-			order: state.order === 'ASC' ? 'DESC' : 'ASC'
+			order: -(state.order)
 		}) );
+		this.getTasks();
 	}
 
   render (){
@@ -293,10 +280,10 @@ class App extends React.Component {
           	<Button
 			        color="inherit"
 			        className={classes.button}
-			        startIcon={order === 'ASC' ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />} 
+			        startIcon={order === 1 ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />} 
 			        onClick={this.toggleOrder}
 	          >
-	            {order}
+	            {order === 1 ? 'ASC' : 'DESC'}
 	          </Button>
 	        </Toolbar>
 	      </AppBar>
@@ -312,13 +299,13 @@ class App extends React.Component {
 
 					{ addTask && 
 						<React.Fragment>
-							<TaskEdit reloadData={this.getAllTasks} close={this.toggleAddTask} />
+							<TaskEdit reloadData={this.getTasks} close={this.toggleAddTask} />
 							<div className={classes.divider} />
 						</React.Fragment>
 					}
 
       		{ tasks.map( task => 
-      			<Task key={task._id} task={task} reloadData={this.getAllTasks} /> 
+      			<Task key={task._id} task={task} reloadData={this.getTasks} /> 
       		) }
 				</main>
 			</div>

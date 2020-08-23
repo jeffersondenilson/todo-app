@@ -26,18 +26,25 @@ app.use(express.urlencoded({extended: true}));
 
 //endpoints
 app.get('/api/getAllTasks', (req, res) => {
-  Task.find(function(err, tasks){
+  const { sort = 'complete', order = 1 } = req.query;
+
+  Task.find({})
+  .sort({ [sort]: order })
+  .exec(function(err, tasks){
     if(err) handleError(err, res);
     res.send(tasks);
   });
 });
 
-//CHANGE TO SEARCH WITH QUERY
-app.get('/api/getTask/:id', (req, res)=>{
-  Task.findOne({_id: req.params.id}, function(err, task){
+app.get('/api/searchTasks/', (req, res)=>{
+  let { search, sort = 'complete', order = 1 } = req.query;
+  search = new RegExp(`${search}`, 'i');
+
+  Task.find({ $or: [ {title: search}, {details: search} ] })
+  .sort({ [sort]: order })
+  .exec(function(err, tasks){
     if(err) handleError(err, res);
-    if(task === null) res.status(400).send(`Could not find task ${req.params.id}`);
-    res.send(task);
+    res.send(tasks);
   });
 });
 
