@@ -75,7 +75,9 @@ function Task(props){
 				{...task, complete: !task.complete});
 			reloadData();
 		}catch(err){
-			/*TODO: feedback*/
+			// setErrorMessage({ 
+			// 	message: err.message, severity: 'error', show: true 
+			// });
 			console.log(err);
 		}
 	}
@@ -86,7 +88,9 @@ function Task(props){
 			await axios.delete(`/api/deleteTask/${task._id}`);
 			reloadData();
 		}catch(err){
-			/*TODO: feedback*/
+			// setErrorMessage({ 
+			// 	message: err.message, severity: 'error', show: true 
+			// });
 			console.log(err);
 		}
 	}

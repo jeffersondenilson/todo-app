@@ -22,6 +22,7 @@ import BackspaceIcon from '@material-ui/icons/Backspace';
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
 import Task from './Task';
 import TaskEdit from './TaskEdit';
+import Feedback from './Feedback';
 const axios = require('axios');
 
 const styles = theme => ({
@@ -143,7 +144,8 @@ class App extends React.Component {
 			order: 1,
 			search: '',
 			mobileSearchBar: false,
-			addTask: false
+			addTask: false,
+			errorMessage: { show: false }
 		};
 	}
 
@@ -161,7 +163,9 @@ class App extends React.Component {
 				const res = await axios.get(url);
 				this.setState({tasks: res.data});
 			}catch(err){
-				/*TODO*/
+				this.setState({
+					errorMessage: { message: err.message, severity: 'error', show: true };
+				});
 				console.log(err);
 			}
 		});
@@ -204,9 +208,19 @@ class App extends React.Component {
 		this.getTasks();
 	}
 
+	handleError = (show = false, err = {}) => {
+		err = {message: err.message, severity: 'error', show};
+		this.setState({ errorMessage: err });
+	}
+
+	// closeErrorMessage = () => {
+	// 	this.setState({ errorMessage: {show: false} });
+	// }
+
   render (){
   	const { classes } = this.props;
-		const { tasks, sort, order, search, mobileSearchBar, addTask } = this.state;
+		const { tasks, sort, order, search,
+			 mobileSearchBar, addTask, errorMessage } = this.state;
 		
     return(
     	<div className={classes.root}>
@@ -308,6 +322,9 @@ class App extends React.Component {
       			<Task key={task._id} task={task} reloadData={this.getTasks} /> 
       		) }
 				</main>
+
+				<Feedback open={errorMessage.show} close={handleError} 
+					message={errorMessage.message} severity={errorMessage.severity} />
 			</div>
     );
   }
