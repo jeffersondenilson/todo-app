@@ -37,10 +37,8 @@ const useStyles = makeStyles( (theme) => ({
 	}
 }) );
 
-function TaskEdit(props){
+function TaskEdit({ close, reloadData, handleError, ...props }){
 	const classes = useStyles();
-	const { close, reloadData } = props;
-	// console.log(reloadData);
 	const [task, setTask] = useState(props.task || {title: '', details: ''});
 	const [titleError, setTitleError] = useState(false);
 
@@ -67,8 +65,8 @@ function TaskEdit(props){
 	  		close();
 	  		reloadData();
   		}catch(err){
-  			// TODO: feedback
   			console.log(err);
+        handleError(err);
   		}
   	}
   };

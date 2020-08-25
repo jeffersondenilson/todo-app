@@ -12,6 +12,8 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import InputBase from '@material-ui/core/InputBase';
+import Snackbar from '@material-ui/core/Snackbar';
+import SnackbarContent from '@material-ui/core/SnackbarContent';
 import AddIcon from '@material-ui/icons/Add';
 import SortIcon from '@material-ui/icons/Sort';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
@@ -163,10 +165,8 @@ class App extends React.Component {
 				const res = await axios.get(url);
 				this.setState({tasks: res.data});
 			}catch(err){
-				this.setState({
-					errorMessage: { message: err.message, severity: 'error', show: true };
-				});
-				console.log(err);
+        console.error(err);
+				this.handleError(err);
 			}
 		});
 	}
@@ -208,14 +208,18 @@ class App extends React.Component {
 		this.getTasks();
 	}
 
-	handleError = (show = false, err = {}) => {
-		err = {message: err.message, severity: 'error', show};
-		this.setState({ errorMessage: err });
+	handleError = (err) => {
+    /*TODO: {message: err.response.statusText, show: true}*/
+    this.setState({ 
+      errorMessage: {
+        message: err.response.statusText, type: 'error', show: true
+      }
+    });
 	}
 
-	// closeErrorMessage = () => {
-	// 	this.setState({ errorMessage: {show: false} });
-	// }
+  closeError = () => {
+    this.setState({ errorMessage: {show: false} });
+  }
 
   render (){
   	const { classes } = this.props;
@@ -313,18 +317,30 @@ class App extends React.Component {
 
 					{ addTask && 
 						<React.Fragment>
-							<TaskEdit reloadData={this.getTasks} close={this.toggleAddTask} />
+							<TaskEdit close={this.toggleAddTask} 
+                reloadData={this.getTasks} handleError={this.handleError} />
 							<div className={classes.divider} />
 						</React.Fragment>
 					}
 
       		{ tasks.map( task => 
-      			<Task key={task._id} task={task} reloadData={this.getTasks} /> 
+      			<Task key={task._id} task={task} 
+              reloadData={this.getTasks} handleError={this.handleError} /> 
       		) }
 				</main>
 
-				<Feedback open={errorMessage.show} close={handleError} 
-					message={errorMessage.message} severity={errorMessage.severity} />
+        <Snackbar 
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'center',
+          }} 
+          open={errorMessage.show} 
+          autoHideDuration={6000} 
+          onClose={this.closeError}
+        >
+          <SnackbarContent message={`ERROR: ${errorMessage.message}`} 
+          style={{backgroundColor: 'red', fontWeight: 'bold'}} />
+        </Snackbar>
 			</div>
     );
   }

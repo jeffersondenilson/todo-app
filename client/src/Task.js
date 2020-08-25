@@ -54,9 +54,8 @@ const useStyles = makeStyles( (theme) => ({
 	}
 }) );
 
-function Task(props){
+function Task({ task, reloadData, handleError }){
 	const classes = useStyles();
-	const { task, reloadData } = props;
 	const [editMode, setEditMode] = useState(false);
 	const [deleteDialog, setDeleteDialog] = useState(false);
 	const popupState = usePopupState({ variant: 'popover', popupId: 'task-options-menu' });
@@ -75,10 +74,8 @@ function Task(props){
 				{...task, complete: !task.complete});
 			reloadData();
 		}catch(err){
-			// setErrorMessage({ 
-			// 	message: err.message, severity: 'error', show: true 
-			// });
 			console.log(err);
+      handleError(err);
 		}
 	}
 
@@ -88,15 +85,14 @@ function Task(props){
 			await axios.delete(`/api/deleteTask/${task._id}`);
 			reloadData();
 		}catch(err){
-			// setErrorMessage({ 
-			// 	message: err.message, severity: 'error', show: true 
-			// });
 			console.log(err);
+      handleError(err);
 		}
 	}
 
 	if(editMode){
-		return <TaskEdit task={task} reloadData={reloadData} close={toggleEditMode} />
+		return <TaskEdit task={task} close={toggleEditMode} 
+      reloadData={reloadData} handleError={handleError} />
 	}
 
 	return (
