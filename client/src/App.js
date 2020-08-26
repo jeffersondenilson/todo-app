@@ -1,30 +1,27 @@
 import React from 'react';
-//import logo from './logo.svg';
-//import './App.css';
 import PropTypes from 'prop-types';
 import { fade, withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import Hidden from '@material-ui/core/Hidden';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
 import Button from '@material-ui/core/Button';
+import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
 import InputBase from '@material-ui/core/InputBase';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 import Snackbar from '@material-ui/core/Snackbar';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
 import AddIcon from '@material-ui/icons/Add';
-import SortIcon from '@material-ui/icons/Sort';
-import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import SearchIcon from '@material-ui/icons/Search';
-import CloseIcon from '@material-ui/icons/Close';
+import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 import BackspaceIcon from '@material-ui/icons/Backspace';
+import CloseIcon from '@material-ui/icons/Close';
+import SearchIcon from '@material-ui/icons/Search';
+import SortIcon from '@material-ui/icons/Sort';
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
 import Task from './Task';
 import TaskEdit from './TaskEdit';
-import Feedback from './Feedback';
 const axios = require('axios');
 
 const styles = theme => ({
@@ -41,13 +38,6 @@ const styles = theme => ({
   		display: 'none'	
   	}
   },
-  button: {
-    [theme.breakpoints.down('xs')]: {
-    	// transform: 'scale(0.8)',
-    	// marginLeft: '1px',
-    	// marginRight: '1px'
-    }
-  },
   actions: {
   	[theme.breakpoints.down('xs')]: {
 	  	display: 'inline-grid',
@@ -57,6 +47,7 @@ const styles = theme => ({
     }
   },
   onSearchBarOpen: {
+  	// show two items per row when mobile search bar is opened
   	gridTemplateColumns: 'auto auto'
   },
   search: {
@@ -67,10 +58,8 @@ const styles = theme => ({
       backgroundColor: fade(theme.palette.common.white, 0.25),
     },
     marginRight: theme.spacing(2),
-    // marginLeft: 0,
     width: '100%',
     [theme.breakpoints.up('sm')]: {
-      // marginLeft: theme.spacing(3),
       width: 'auto',
     },
   },
@@ -88,13 +77,9 @@ const styles = theme => ({
   },
   inputInput: {
     padding: theme.spacing(1, 4, 1, 0),
-    // vertical padding + font size from searchIcon
     paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
     transition: theme.transitions.create('width'),
-    width: '100%',
-    [theme.breakpoints.up('md')]: {
-      // width: '20ch',
-    },
+    width: '100%'
   },
   cleanSearch: {
   	height: '100%',
@@ -132,6 +117,9 @@ const styles = theme => ({
   		marginLeft: '50px',
   		marginRight: '50px',
   	}
+  },
+  snackbar: {
+    backgroundColor: 'red'
   }
 });
 
@@ -147,7 +135,8 @@ class App extends React.Component {
 			search: '',
 			mobileSearchBar: false,
 			addTask: false,
-			errorMessage: { show: false }
+			errorMessage: '',
+      showError: false
 		};
 	}
 
@@ -158,15 +147,14 @@ class App extends React.Component {
 	getTasks = () => {
 		this.setState( async (state) => {
 			try{
-				let { search, sort, order } = state;
+				const { search, sort, order } = state;
 				const url = search ? 
 				`/api/searchTasks?search=${search}&sort=${sort}&order=${order}` : 
 				`/api/getAllTasks?sort=${sort}&order=${order}`
 				const res = await axios.get(url);
 				this.setState({tasks: res.data});
 			}catch(err){
-        console.error(err);
-				this.handleError(err);
+				this.handleError(err, 'Could not get tasks:');
 			}
 		});
 	}
@@ -187,7 +175,7 @@ class App extends React.Component {
 		this.setState({search: event.target.value});
 		// reset wait
 		clearTimeout(delaySearch);
-		// wait while user is typing
+		// search only after user typed
 		delaySearch = setTimeout(this.getTasks, 500);
 	}
 
@@ -202,29 +190,27 @@ class App extends React.Component {
 	}
 
 	toggleOrder = () => {
-		this.setState( state => ({
-			order: -(state.order)
-		}) );
+		// toggle between 1 and -1
+		this.setState( state => ({ order: -(state.order) }) );
 		this.getTasks();
 	}
 
-	handleError = (err) => {
-    /*TODO: {message: err.response.statusText, show: true}*/
+	handleError = (err, customMsg = '') => {
+		console.error(err.response.data);
     this.setState({ 
-      errorMessage: {
-        message: err.response.statusText, type: 'error', show: true
-      }
+      errorMessage: `${customMsg} ${err.response.status} ${err.response.statusText}`,
+      showError: true
     });
 	}
 
   closeError = () => {
-    this.setState({ errorMessage: {show: false} });
+    this.setState({ showError: false });
   }
 
   render (){
   	const { classes } = this.props;
 		const { tasks, sort, order, search,
-			 mobileSearchBar, addTask, errorMessage } = this.state;
+			 mobileSearchBar, addTask, errorMessage, showError } = this.state;
 		
     return(
     	<div className={classes.root}>
@@ -235,24 +221,24 @@ class App extends React.Component {
 	        		To Do App
 	        	</Typography>
 	        	{ mobileSearchBar ? 
+	        		/*hide the add icon to have more space for search bar on mobile*/
 		        	<SearchBar 
 		        		search={search}
 		          	handleSearch={this.handleSearch} 
 		          	cleanSearch={this.cleanSearch}
 		          	classes={classes}
-	          	/> 
+	          	/>
 	          	: 
 			        <IconButton
 		            aria-label="add task"
 				        color="inherit"
-				        className={classes.button} 
 				        onClick={this.toggleAddTask}
 				      >
 		            <AddIcon />
 		          </IconButton>
 	        	}
 
-	        	{/*desktop search bar*/}
+	        	{/*desktop search bar, hidden on mobile*/}
 	        	<Hidden xsDown>
 		          <SearchBar 
 		          	search={search}
@@ -262,12 +248,12 @@ class App extends React.Component {
 		          />
 	          </Hidden>
 
+	        	{/*hidden on desktop, so mobile search bar can't be opened*/}
 	          <Hidden smUp>
 		          { mobileSearchBar ? 
 			          <IconButton
 			            color="inherit"
 			            aria-label="toggle search task"
-			            className={classes.button}
 			            onClick={this.toggleSearchBar}
 			            style={{ marginLeft: 15 }}
 			          >
@@ -277,7 +263,6 @@ class App extends React.Component {
 			          <IconButton
 			            color="inherit"
 			            aria-label="toggle search task"
-			            className={classes.button}
 			            onClick={this.toggleSearchBar}
 			          >
 			          	<SearchIcon />
@@ -297,7 +282,6 @@ class App extends React.Component {
 
           	<Button
 			        color="inherit"
-			        className={classes.button}
 			        startIcon={order === 1 ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />} 
 			        onClick={this.toggleOrder}
 	          >
@@ -310,11 +294,12 @@ class App extends React.Component {
 					{/*make content stay below app bar*/}
 					<div className={classes.toolbar} />
 
-					{/*add extra space when search bar is opened*/}
+					{/*add extra space when mobile search bar is opened*/}
 					{ mobileSearchBar && 
 						<div className={classes.toolbar} style={{ marginTop: -25 }} /> 
 					}
-
+					
+					{/*input to create a new task*/}
 					{ addTask && 
 						<React.Fragment>
 							<TaskEdit close={this.toggleAddTask} 
@@ -334,12 +319,11 @@ class App extends React.Component {
             vertical: 'top',
             horizontal: 'center',
           }} 
-          open={errorMessage.show} 
+          open={showError} 
           autoHideDuration={6000} 
           onClose={this.closeError}
         >
-          <SnackbarContent message={`ERROR: ${errorMessage.message}`} 
-          style={{backgroundColor: 'red', fontWeight: 'bold'}} />
+          <SnackbarContent message={errorMessage} className={classes.snackbar} />
         </Snackbar>
 			</div>
     );
@@ -393,7 +377,6 @@ function SortMenu(props){
 				aria-controls="sort-options-menu" 
       	aria-haspopup="true" 
         color="inherit"
-        // className={classes.button}
         startIcon={<SortIcon />}
       >
         {sort}
@@ -411,10 +394,3 @@ function SortMenu(props){
     </React.Fragment>
 	);
 }
-
-/*
-value         |0px     600px    960px    1280px   1920px
-key           |xs      sm       md       lg       xl
-screen width  |--------|--------|--------|--------|-------->
-range         |   xs   |   sm   |   md   |   lg   |   xl
-*/
