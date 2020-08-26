@@ -31,8 +31,11 @@ app.get('/api/getAllTasks', (req, res) => {
   Task.find({})
   .sort({ [sort]: order })
   .exec(function(err, tasks){
-    if(err) handleError(err, res);
-    res.send(tasks);
+    if(err){
+      handleError(err, res);
+    }else{
+      res.send(tasks);
+    }
   });
 });
 
@@ -43,8 +46,11 @@ app.get('/api/searchTasks/', (req, res)=>{
   Task.find({ $or: [ {title: search}, {details: search} ] })
   .sort({ [sort]: order })
   .exec(function(err, tasks){
-    if(err) handleError(err, res);
-    res.send(tasks);
+    if(err){
+      handleError(err, res);
+    }else{
+      res.send(tasks);
+    }
   });
 });
 
@@ -55,8 +61,11 @@ app.post('/api/createTask', (req, res)=>{
   });
 
   task.save(function(err, task){
-    if(err) handleError(err, res);
-    res.send(task);
+    if(err){
+      handleError(err, res);
+    }else{
+      res.send(task);
+    }
   });
 });
 
@@ -68,17 +77,25 @@ app.put('/api/updateTask/:id', (req, res)=>{
     //return updated document, run schema validations
     {new: true, runValidators: true}, 
     function(err, task){
-      if(err) handleError(err, res);
-      if(task === null) res.status(400).send(`Could not find task ${req.params.id}`);
-      res.send(task);
+      if(err){
+        handleError(err, res);
+      }else if(task === null){
+        res.status(400).send(`Could not find task ${req.params.id}`);
+      }else{
+        res.send(task);
+      }
     });
 });
 
 app.delete('/api/deleteTask/:id', (req, res)=>{
   Task.findOneAndDelete({_id: req.params.id}, function(err, task){
-    if(err) handleError(err, res);
-    if(task === null) res.status(400).send(`Could not find task ${req.params.id}`);
-    res.send(task);
+    if(err){
+      handleError(err, res);
+    }else if(task === null){
+      res.status(400).send(`Could not find task ${req.params.id}`);
+    }else{
+      res.send(task);
+    }
   });
 });
 
