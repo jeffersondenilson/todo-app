@@ -1,13 +1,9 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { fade, withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Button from '@material-ui/core/Button';
 import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
-import InputBase from '@material-ui/core/InputBase';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
 import Snackbar from '@material-ui/core/Snackbar';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -15,11 +11,10 @@ import Typography from '@material-ui/core/Typography';
 import AddIcon from '@material-ui/icons/Add';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
-import BackspaceIcon from '@material-ui/icons/Backspace';
 import CloseIcon from '@material-ui/icons/Close';
 import SearchIcon from '@material-ui/icons/Search';
-import SortIcon from '@material-ui/icons/Sort';
-import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state';
+import SearchBar from './SearchBar';
+import SortMenu from './SortMenu';
 import Task from './Task';
 import TaskEdit from './TaskEdit';
 const axios = require('axios');
@@ -50,50 +45,6 @@ const styles = theme => ({
   	// show two items per row when mobile search bar is opened
   	gridTemplateColumns: 'auto auto'
   },
-  search: {
-    position: 'relative',
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: fade(theme.palette.common.white, 0.15),
-    '&:hover': {
-      backgroundColor: fade(theme.palette.common.white, 0.25),
-    },
-    marginRight: theme.spacing(2),
-    width: '100%',
-    [theme.breakpoints.up('sm')]: {
-      width: 'auto',
-    },
-  },
-  searchIcon: {
-    padding: theme.spacing(0, 2),
-    height: '100%',
-    position: 'absolute',
-    pointerEvents: 'none',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  inputRoot: {
-    color: 'inherit'
-  },
-  inputInput: {
-    padding: theme.spacing(1, 4, 1, 0),
-    paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
-    transition: theme.transitions.create('width'),
-    width: '100%'
-  },
-  cleanSearch: {
-  	height: '100%',
-    position: 'absolute',
-    top: 0,
-    right: -10,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    transform: 'scale(0.7)',
-    '&:hover': {
-      color: 'blue'
-    },
-  },
   toolbar: {...theme.mixins.toolbar},
   content: {
     flexGrow: 1,
@@ -118,7 +69,7 @@ const styles = theme => ({
   		marginRight: '50px',
   	}
   },
-  snackbar: {
+  snackbarContent: {
     backgroundColor: 'red'
   }
 });
@@ -226,7 +177,6 @@ class App extends React.Component {
 		        		search={search}
 		          	handleSearch={this.handleSearch} 
 		          	cleanSearch={this.cleanSearch}
-		          	classes={classes}
 	          	/>
 	          	: 
 			        <IconButton
@@ -244,7 +194,6 @@ class App extends React.Component {
 		          	search={search}
 		          	handleSearch={this.handleSearch} 
 		          	cleanSearch={this.cleanSearch}
-		          	classes={classes} 
 		          />
 	          </Hidden>
 
@@ -270,15 +219,7 @@ class App extends React.Component {
 		        	}
 	          </Hidden>
 
-	          <PopupState variant="popover" popupId="sort-menu">
-						  {(popupState) => 
-						  	<SortMenu 
-							  	popupState={popupState} 
-							  	sort={sort} 
-							  	handleSort={this.handleSort} 
-						  	/>
-						  }
-						</PopupState>
+						<SortMenu sort={sort} handleSort={this.handleSort} />
 
           	<Button
 			        color="inherit"
@@ -321,22 +262,31 @@ class App extends React.Component {
           }} 
           open={showError} 
           autoHideDuration={6000} 
-          onClose={this.closeError}
+          onClose={this.closeError} 
+
         >
-          <SnackbarContent message={errorMessage} className={classes.snackbar} />
+          <SnackbarContent  
+          	className={classes.snackbarContent} 
+          	message={errorMessage} 
+          	action={
+	            <IconButton size="small" aria-label="close" color="inherit" onClick={this.closeError}>
+	              <CloseIcon fontSize="small" />
+	            </IconButton>
+        		}
+          />
         </Snackbar>
 			</div>
     );
   }
 }
 
-App.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
+// App.propTypes = {
+//   classes: PropTypes.object.isRequired,
+// };
 
 export default withStyles(styles)(App);
 
-function SearchBar(props){
+/*function SearchBar(props){
 	const { classes, search } = props
 
 	return (
@@ -365,9 +315,9 @@ function SearchBar(props){
 	  	}
 	  </div>
 	);
-}
+}*/
 
-function SortMenu(props){
+/*function SortMenu(props){
 	const { popupState, sort, handleSort } = props;
 
 	return (
@@ -393,4 +343,4 @@ function SortMenu(props){
       </Menu>
     </React.Fragment>
 	);
-}
+}*/
