@@ -1,22 +1,23 @@
+// render a task
+// mark complete, delete and activate edit mode
 import React, { useState } from 'react';
-// import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
+import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import IconButton from '@material-ui/core/IconButton';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
+import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogActions from '@material-ui/core/DialogActions';
-import Button from '@material-ui/core/Button';
-import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
-import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
 import {
   usePopupState,
   bindTrigger,
@@ -74,7 +75,6 @@ function Task({ task, reloadData, handleError }){
 				{...task, complete: !task.complete});
 			reloadData();
 		}catch(err){
-			// console.log(err);
       handleError(err, 'Could not update task:');
 		}
 	}
@@ -85,7 +85,6 @@ function Task({ task, reloadData, handleError }){
 			await axios.delete(`/api/deleteTask/${task._id}`);
 			reloadData();
 		}catch(err){
-			// console.log({...err});
       handleError(err, 'Could not delete task:');
 		}
 	}

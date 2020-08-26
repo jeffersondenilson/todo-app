@@ -1,10 +1,11 @@
+// create/edit task
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import IconButton from '@material-ui/core/IconButton';
 import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
-import IconButton from '@material-ui/core/IconButton';
-import SaveIcon from '@material-ui/icons/Save';
 import CloseIcon from '@material-ui/icons/Close';
+import SaveIcon from '@material-ui/icons/Save';
 const axios = require('axios');
 
 const useStyles = makeStyles( (theme) => ({
@@ -39,6 +40,7 @@ const useStyles = makeStyles( (theme) => ({
 
 function TaskEdit({ close, reloadData, handleError, ...props }){
 	const classes = useStyles();
+	// when no task is passed (add task), set empty task
 	const [task, setTask] = useState(props.task || {title: '', details: ''});
 	const [titleError, setTitleError] = useState(false);
 
@@ -50,7 +52,7 @@ function TaskEdit({ close, reloadData, handleError, ...props }){
 		if(id === 'title'){//test for empty string
 			setTitleError(!/([^\s])/.test(value));
 		}
-  };
+  }
 
   const submit = async () => {
   	if(!/([^\s])/.test(task.title)){//test for empty string 
@@ -65,11 +67,10 @@ function TaskEdit({ close, reloadData, handleError, ...props }){
 	  		close();
 	  		reloadData();
   		}catch(err){
-  			// console.log({...err});
         handleError(err, 'Could not send changes:');
   		}
   	}
-  };
+  }
   
 	return (
 		<Paper className={classes.root}>

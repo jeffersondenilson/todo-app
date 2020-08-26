@@ -1,3 +1,5 @@
+// main app
+// get tasks, search and control app bar
 import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -280,67 +282,4 @@ class App extends React.Component {
   }
 }
 
-// App.propTypes = {
-//   classes: PropTypes.object.isRequired,
-// };
-
 export default withStyles(styles)(App);
-
-/*function SearchBar(props){
-	const { classes, search } = props
-
-	return (
-		<div className={classes.search}>
-	    <div className={classes.searchIcon}>
-	    	<SearchIcon />
-	    </div>
-	    <InputBase
-	      placeholder="Search…"
-	      classes={{
-	      	root: classes.inputRoot,
-	      	input: classes.inputInput,
-	      }}
-	      inputProps={{ 'aria-label': 'search' }}
-	      value={search}
-	      onChange={props.handleSearch}
-	    />
-	    { search && 
-	    <IconButton 
-	    	aria-label='clean search'
-	    	className={classes.cleanSearch} 
-	    	color="inherit" 
-	    	onClick={props.cleanSearch}>
-	    	<BackspaceIcon />
-	    </IconButton>
-	  	}
-	  </div>
-	);
-}*/
-
-/*function SortMenu(props){
-	const { popupState, sort, handleSort } = props;
-
-	return (
-		<React.Fragment>
-      <Button {...bindTrigger(popupState)} 
-      	aria-label="sort options" 
-				aria-controls="sort-options-menu" 
-      	aria-haspopup="true" 
-        color="inherit"
-        startIcon={<SortIcon />}
-      >
-        {sort}
-      </Button>
-      <Menu id="sort-options-menu" {...bindMenu(popupState)}>
-      	{
-      		['title', 'complete', 'modified'].map( option => 
-      			<MenuItem key={option} selected={ option === sort }
-      			 onClick={ ()=>{popupState.close(); handleSort(option);} }>
-      				{option}
-      			</MenuItem>
-      		)
-      	}
-      </Menu>
-    </React.Fragment>
-	);
-}*/
