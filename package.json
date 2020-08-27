@@ -5,11 +5,16 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
+    "build": "cd client/ && npm install && npm run build",
     "server": "nodemon index.js",
     "client": "npm run start --prefix client",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "cacheDirectories": [
+    "node_modules",
+    "client/node_modules"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jeffersondenilson/todo-app.git"
@@ -22,11 +27,11 @@
   },
   "homepage": "https://github.com/jeffersondenilson/todo-app#readme",
   "dependencies": {
-    "concurrently": "^5.2.0",
     "express": "^4.17.1",
     "mongoose": "^5.9.25"
   },
   "devDependencies": {
-    "nodemon": "^2.0.4"
+    "nodemon": "^2.0.4",
+    "concurrently": "^5.2.0"
   }
 }

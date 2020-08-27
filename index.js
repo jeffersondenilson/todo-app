@@ -3,14 +3,19 @@ const app = express();
 const mongoose = require('mongoose');
 const PORT = process.env.port || 3001;
 
+//find a database or use localhost
+const uristring =
+    process.env.MONGOLAB_URI ||
+    process.env.MONGOHQ_URL ||
+    'mongodb://localhost/tasks';
 //mongoose connection
-mongoose.connect('mongodb://localhost/tasks', {useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false})
+mongoose.connect(uristring, {useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false})
 	//handle error on first connection
-	.catch(err=>console.log(err));
+	.catch(err=>console.log('ERROR connecting to: ' + uristring + '. ' + err));
 const db = mongoose.connection;
 //handle error after first connection
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', ()=>console.log('mongoose connected'));
+db.on('error', console.error.bind(console, 'ERROR connecting to: ' + uristring));
+db.once('open', ()=>console.log('Succeeded connected to: ' + uristring));
 
 //schema and model
 const taskSchema = new mongoose.Schema({
@@ -98,6 +103,17 @@ app.delete('/api/deleteTask/:id', (req, res)=>{
     }
   });
 });
+
+if(process.env.NODE_ENV === 'production'){
+  // serve static files (production)
+  app.use(express.static('client/build'));
+
+  // send index.html for other routes
+  const path = require('path');
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+  });
+}
 
 app.listen(PORT, ()=>console.log(`app listening on port ${PORT}`));
 
