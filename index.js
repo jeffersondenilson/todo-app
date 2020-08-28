@@ -1,13 +1,11 @@
+require('dotenv').config();
+
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
 const PORT = process.env.port || 3001;
+const uristring = process.env.MONGO_URI
 
-//find a database or use localhost
-const uristring =
-    process.env.MONGOLAB_URI ||
-    process.env.MONGOHQ_URL ||
-    'mongodb://localhost/tasks';
 //mongoose connection
 mongoose.connect(uristring, {useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false})
 	//handle error on first connection
