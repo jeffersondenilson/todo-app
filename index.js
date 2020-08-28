@@ -5,7 +5,7 @@ const app = express();
 const mongoose = require('mongoose');
 const PORT = process.env.port || 3001;
 const uristring = process.env.MONGO_URI
-
+console.log('dotenv test: '+process.env.DOT)
 //mongoose connection
 mongoose.connect(uristring, {useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false})
 	//handle error on first connection
