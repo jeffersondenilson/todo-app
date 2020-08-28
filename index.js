@@ -1,11 +1,13 @@
-require('dotenv').config();
+if(process.env.NODE_ENV !== 'production'){
+  require('dotenv').config();
+}
 
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
-const PORT = process.env.port || 3001;
-const uristring = process.env.MONGO_URI
-console.log('dotenv test: '+process.env.DOT)
+const PORT = process.env.PORT || 3001;
+const uristring = process.env.MONGO_URI || 'mongodb://localhost/tasks';
+
 //mongoose connection
 mongoose.connect(uristring, {useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false})
 	//handle error on first connection
