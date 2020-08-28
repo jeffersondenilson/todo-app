@@ -9,11 +9,11 @@ const uristring = process.env.MONGO_URI
 //mongoose connection
 mongoose.connect(uristring, {useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false})
 	//handle error on first connection
-	.catch(err=>console.log('ERROR connecting to: ' + uristring + '. ' + err));
+	.catch(err=>console.log('ERROR connecting to mongoDB '+ err));
 const db = mongoose.connection;
 //handle error after first connection
-db.on('error', console.error.bind(console, 'ERROR connecting to: ' + uristring));
-db.once('open', ()=>console.log('Succeeded connected to: ' + uristring));
+db.on('error', console.error.bind(console, 'ERROR connecting to mongoDB'));
+db.once('open', ()=>console.log('Succeeded connected to mongoDB'));
 
 //schema and model
 const taskSchema = new mongoose.Schema({
