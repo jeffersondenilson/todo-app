@@ -1,11 +1,9 @@
-if(process.env.NODE_ENV !== 'production'){
-  require('dotenv').config();
-}
+require('dotenv').config();
 
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 5000;
 const uristring = process.env.MONGO_URI || 'mongodb://localhost/tasks';
 
 //mongoose connection
@@ -34,6 +32,7 @@ app.get('/api/getAllTasks', (req, res) => {
   const { sort = 'complete', order = 1 } = req.query;
 
   Task.find({})
+  .collation({ locale: "en" })// make find case insensitive
   .sort({ [sort]: order })
   .exec(function(err, tasks){
     if(err){
@@ -49,6 +48,7 @@ app.get('/api/searchTasks/', (req, res)=>{
   search = new RegExp(`${search}`, 'i');
 
   Task.find({ $or: [ {title: search}, {details: search} ] })
+  .collation({ locale: "en" })// make find case insensitive
   .sort({ [sort]: order })
   .exec(function(err, tasks){
     if(err){
