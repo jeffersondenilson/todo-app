@@ -1,15 +1,15 @@
 {
   "name": "todo-app",
   "version": "1.0.0",
-  "description": "",
+  "description": "Todo app with React, Material-UI, Express and MongoDB",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "build": "cd client/ && npm install && npm run build",
+    "start": "NODE_ENV=production node index.js",
     "server": "nodemon index.js",
     "client": "npm run start --prefix client",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false cd client/ && npm install && npm run build"
   },
   "cacheDirectories": [
     "node_modules",
@@ -19,20 +19,20 @@
     "type": "git",
     "url": "git+https://github.com/jeffersondenilson/todo-app.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["express", "material-ui", "mongoDB", "mongoose", "node", "react"],
+  "author": "Jefferson Denilson",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/jeffersondenilson/todo-app/issues"
   },
   "homepage": "https://github.com/jeffersondenilson/todo-app#readme",
   "dependencies": {
+    "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "mongoose": "^5.9.25"
   },
   "devDependencies": {
     "concurrently": "^5.2.0",
-    "dotenv": "^8.2.0",
     "nodemon": "^2.0.4"
   }
 }
