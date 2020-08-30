@@ -1,5 +1,5 @@
 # To Do App
-App de tarefas com React, Material-UI, Express e MongoDB
+App de tarefas com React, Material-UI, Express e MongoDB 
 [https://todo-app-94465.herokuapp.com/](https://todo-app-94465.herokuapp.com/)
 
 ## Instalação
@@ -13,7 +13,7 @@ npm install
 ```
 
 ## Uso
-Crie o arquivo .env e preencha o valor de MONGO_URI ([.env.example](.env.example)), mongoDB local será usado por padrão.
+Crie o arquivo .env e preencha o valor de MONGO_URI (ver [.env.example](.env.example)) ou mongoDB local será usado por padrão.
 
 * **Iniciar servidor (com nodemon):**
 ```bash
