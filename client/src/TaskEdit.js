@@ -67,7 +67,7 @@ function TaskEdit({ close, reloadData, handleError, ...props }){
 	  		close();
 	  		reloadData();
   		}catch(err){
-        handleError(err, 'Could not send changes:');
+        handleError(err, 'Could not send changes');
   		}
   	}
   }

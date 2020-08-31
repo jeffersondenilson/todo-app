@@ -75,7 +75,7 @@ function Task({ task, reloadData, handleError }){
 				{...task, complete: !task.complete});
 			reloadData();
 		}catch(err){
-      handleError(err, 'Could not update task:');
+      handleError(err, 'Could not update task');
 		}
 	}
 
@@ -85,7 +85,7 @@ function Task({ task, reloadData, handleError }){
 			await axios.delete(`/api/deleteTask/${task._id}`);
 			reloadData();
 		}catch(err){
-      handleError(err, 'Could not delete task:');
+      handleError(err, 'Could not delete task');
 		}
 	}
 

@@ -107,7 +107,7 @@ class App extends React.Component {
 				const res = await axios.get(url);
 				this.setState({tasks: res.data});
 			}catch(err){
-				this.handleError(err, 'Could not get tasks:');
+				this.handleError(err, 'Could not get tasks');
 			}
 		});
 	}
@@ -149,12 +149,11 @@ class App extends React.Component {
 	}
 
 	handleError = (err, customMsg = '') => {
-		console.log({...err});
-		console.error(err);
+		console.error(err.message);
 		let message = '';
 		if(err.response){
 			console.error(err.response.data);
-			message = `${err.response.status} ${err.response.statusText}`
+			message = `: ${err.response.status} ${err.response.statusText}`
 		}
     this.setState({ 
       errorMessage: `${customMsg} ${message}`,
