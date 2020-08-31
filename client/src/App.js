@@ -149,14 +149,13 @@ class App extends React.Component {
 	}
 
 	handleError = (err, customMsg = '') => {
-		console.error(err.message);
-		let message = '';
+		console.error(err);
+		let message = ': '+err.message;
 		if(err.response){
-			console.error(err.response.data);
 			message = `: ${err.response.status} ${err.response.statusText}`
 		}
     this.setState({ 
-      errorMessage: `${customMsg} ${message}`,
+      errorMessage: `${customMsg}${message}`,
       showError: true
     });
 	}
