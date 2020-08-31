@@ -150,8 +150,9 @@ class App extends React.Component {
 
 	handleError = (err, customMsg = '') => {
 		console.log({...err});
+		console.error(err);
 		let message = '';
-		if(err.isAxiosError){
+		if(err.response){
 			console.error(err.response.data);
 			message = `${err.response.status} ${err.response.statusText}`
 		}
