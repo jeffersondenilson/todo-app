@@ -10,6 +10,8 @@ import Snackbar from '@material-ui/core/Snackbar';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
+import Backdrop from '@material-ui/core/Backdrop';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import AddIcon from '@material-ui/icons/Add';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
@@ -73,6 +75,16 @@ const styles = theme => ({
   },
   snackbarContent: {
     backgroundColor: 'red'
+  },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    backgroundColor: '#0004',
+    color: 'cyan',
+  },
+  notFoundText: {
+  	color: '#eee',
+  	fontSize: '1.3rem',
+  	fontWeight: 'bold'
   }
 });
 
@@ -89,7 +101,8 @@ class App extends React.Component {
 			mobileSearchBar: false,
 			addTask: false,
 			errorMessage: '',
-      showError: false
+      showError: false,
+      isLoading: false
 		};
 	}
 
@@ -97,7 +110,12 @@ class App extends React.Component {
 		this.getTasks();
 	}
 
+	setLoading = (value = false) => {
+		this.setState({isLoading: value});
+	}
+
 	getTasks = () => {
+		this.setLoading(true);
 		this.setState( async (state) => {
 			try{
 				const { search, sort, order } = state;
@@ -108,6 +126,8 @@ class App extends React.Component {
 				this.setState({tasks: res.data});
 			}catch(err){
 				this.handleError(err, 'Could not get tasks');
+			}finally{
+				this.setLoading(false);
 			}
 		});
 	}
@@ -167,7 +187,8 @@ class App extends React.Component {
   render (){
   	const { classes } = this.props;
 		const { tasks, sort, order, search,
-			 mobileSearchBar, addTask, errorMessage, showError } = this.state;
+			 mobileSearchBar, addTask, isLoading, 
+			 errorMessage, showError } = this.state;
 		
     return(
     	<div className={classes.root}>
@@ -250,14 +271,21 @@ class App extends React.Component {
 					{ addTask && 
 						<React.Fragment>
 							<TaskEdit close={this.toggleAddTask} 
-                reloadData={this.getTasks} handleError={this.handleError} />
+                reloadData={this.getTasks} handleError={this.handleError}
+                setLoading={this.setLoading} />
 							<div className={classes.divider} />
 						</React.Fragment>
 					}
 
-      		{ tasks.map( task => 
+      		{ search && tasks.length === 0 ? 
+      			<div className={classes.notFoundText}>
+      				No tasks found
+      			</div>
+      			:
+      			tasks.map( task => 
       			<Task key={task._id} task={task} 
-              reloadData={this.getTasks} handleError={this.handleError} /> 
+              reloadData={this.getTasks} handleError={this.handleError}
+              setLoading={this.setLoading} /> 
       		) }
 				</main>
 
@@ -281,6 +309,10 @@ class App extends React.Component {
         		}
           />
         </Snackbar>
+
+        <Backdrop className={classes.backdrop} open={isLoading}>
+        	<CircularProgress color="inherit" />
+      	</Backdrop>
 			</div>
     );
   }

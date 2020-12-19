@@ -55,7 +55,7 @@ const useStyles = makeStyles( (theme) => ({
 	}
 }) );
 
-function Task({ task, reloadData, handleError }){
+function Task({ task, reloadData, handleError, setLoading }){
 	const classes = useStyles();
 	const [editMode, setEditMode] = useState(false);
 	const [deleteDialog, setDeleteDialog] = useState(false);
@@ -70,28 +70,35 @@ function Task({ task, reloadData, handleError }){
 	}
 
 	const updateComplete = async () => {
+		setLoading(true);
 		try{
 			await axios.put(`/api/updateTask/${task._id}`, 
 				{...task, complete: !task.complete});
 			reloadData();
 		}catch(err){
       handleError(err, 'Could not update task');
+		}finally{
+			setLoading(false);
 		}
 	}
 
 	const deleteTask = async () => {
 		setDeleteDialog(false);
+		setLoading(true);
 		try{
 			await axios.delete(`/api/deleteTask/${task._id}`);
 			reloadData();
 		}catch(err){
       handleError(err, 'Could not delete task');
+		}finally{
+			setLoading(false);
 		}
 	}
 
 	if(editMode){
 		return <TaskEdit task={task} close={toggleEditMode} 
-      reloadData={reloadData} handleError={handleError} />
+      reloadData={reloadData} handleError={handleError} 
+      setLoading={setLoading} />
 	}
 
 	return (

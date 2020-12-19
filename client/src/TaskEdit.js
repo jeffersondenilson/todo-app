@@ -38,7 +38,7 @@ const useStyles = makeStyles( (theme) => ({
 	}
 }) );
 
-function TaskEdit({ close, reloadData, handleError, ...props }){
+function TaskEdit({ close, reloadData, handleError, setLoading, ...props }){
 	const classes = useStyles();
 	// when no task is passed (add task), set empty task
 	const [task, setTask] = useState(props.task || {title: '', details: ''});
@@ -58,6 +58,7 @@ function TaskEdit({ close, reloadData, handleError, ...props }){
   	if(!/([^\s])/.test(task.title)){//test for empty string 
   		setTitleError(true);
   	}else{
+  		setLoading(true);
   		try{
 	  		if(task._id){
 	  			await axios.put(`/api/updateTask/${task._id}`, task);
@@ -68,6 +69,8 @@ function TaskEdit({ close, reloadData, handleError, ...props }){
 	  		reloadData();
   		}catch(err){
         handleError(err, 'Could not send changes');
+  		}finally{
+  			setLoading(false);
   		}
   	}
   }
