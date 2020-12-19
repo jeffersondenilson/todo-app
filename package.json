@@ -19,7 +19,14 @@
     "type": "git",
     "url": "git+https://github.com/jeffersondenilson/todo-app.git"
   },
-  "keywords": ["express", "material-ui", "mongoDB", "mongoose", "node", "react"],
+  "keywords": [
+    "express",
+    "material-ui",
+    "mongoDB",
+    "mongoose",
+    "node",
+    "react"
+  ],
   "author": "Jefferson Denilson",
   "license": "MIT",
   "bugs": {
@@ -27,9 +34,10 @@
   },
   "homepage": "https://github.com/jeffersondenilson/todo-app#readme",
   "dependencies": {
+    "cross-env": "7.0.3",
     "dotenv": "8.2.0",
     "express": "4.17.1",
-    "mongoose": "5.10.2"
+    "mongoose": "5.11.8"
   },
   "devDependencies": {
     "concurrently": "5.2.0",
