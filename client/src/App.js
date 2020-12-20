@@ -88,7 +88,7 @@ const styles = theme => ({
   }
 });
 
-let delaySearch;
+let delaySearch, delayLoading;
 
 class App extends React.Component {
 	constructor(props){
@@ -111,7 +111,8 @@ class App extends React.Component {
 	}
 
 	setLoading = (value = false) => {
-		this.setState({isLoading: value});
+		clearTimeout(delayLoading);
+		delayLoading = setTimeout(()=>this.setState({isLoading: value}), 500);
 	}
 
 	getTasks = () => {
