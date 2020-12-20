@@ -111,6 +111,7 @@ class App extends React.Component {
 	}
 
 	setLoading = (value = false) => {
+		// don't show loading if takes less then 500ms
 		clearTimeout(delayLoading);
 		delayLoading = setTimeout(()=>this.setState({isLoading: value}), 500);
 	}
